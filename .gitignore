@@ -3,7 +3,6 @@
 *.spec
 *bases
 *teste_limpar_indices.py
-*IndeceIGPM.py
 *download_temp
 *venv
 *db
