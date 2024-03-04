@@ -22,7 +22,8 @@ class CDI(Indices):
             data = data_nova
         super().__init__(data=data, read_only=read_only, path="db/db_cdi.json")
     
-    def _calculo(self, dados_anterior, dados="", novo=False):
+    
+    def _calculo(self, dados_anterior, dados, novo=False):
         """
         Calcula os novos valores com base nos dados anteriores.
 
@@ -86,6 +87,6 @@ class CDI(Indices):
 if __name__ == "__main__":
     # Exemplo de uso
     data = (datetime.now() - relativedelta(months=0)).strftime("%d/%m/%Y")
-    indice = CDI("01/02/2024", read_only=True)
+    indice = CDI("01/01/2024", read_only=True)
     resultado = indice.resultado()
     print(resultado)

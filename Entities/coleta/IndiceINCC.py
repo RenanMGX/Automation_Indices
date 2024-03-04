@@ -6,6 +6,9 @@ import requests
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+import mysql.connector
+from typing import List, Tuple
+
 
 try:
     from IndicesEstrutura import Indices
@@ -74,6 +77,35 @@ class INCC(Indices):
 
         raise FileNotFoundError("O índice desta data ainda não existe!")
 
+
+    def registrar_db(self, *, valor, var) -> None:
+        with open("db_connection.json", 'r')as _file:
+            db_config = json.load(_file)
+        
+        connection = mysql.connector.connect(
+            host=db_config['host'],
+            user=db_config['user'],
+            password=db_config['password'],
+            database=db_config['database']            
+        )
+        
+        cursor = connection.cursor()
+        cursor.execute(f"SELECT * FROM incc WHERE mes='{self.data}'")
+        resultado:list = cursor.fetchall()
+        
+        if (resultado):
+            #if not self.read_only:
+            print(resultado)
+            if resultado[0][1] == valor:
+                return
+            else:
+                cursor.execute(f"UPDATE incc SET valor={valor},variacao={var}  WHERE mes='{self.data}'")
+                connection.commit()
+                print(f"atualizado")
+                return
+        else:
+            return
+
     def _calculo(self, dados_anterior, dados, novo=False):
         """
         Calcula os novos valores com base nos dados anteriores.
@@ -83,8 +115,13 @@ class INCC(Indices):
         - dados (dict): Dados atuais.
         - novo (bool): Indica se é um novo cálculo.
         """
+        
+        
         VALOR_INCC = self.valor_incc()
+        
         INDICE = self._extrair_indice(192)
+        
+        self.registrar_db(valor=VALOR_INCC, var=VALOR_INCC)
 
         if not novo:
             dados['Mês Base'] = datetime.strftime(self.data, "%Y-%m-%d")
@@ -97,6 +134,7 @@ class INCC(Indices):
                 'INCC MÊS': INDICE
             }
             self.arquivo.append(novos_dados)
+            
 
     def _tratar_retorno(self, entrada):
         """
@@ -113,5 +151,5 @@ class INCC(Indices):
 
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = INCC("01/10/2023", read_only=True)
+    indice = INCC("01/02/2024", read_only=True)
     print(indice.resultado())
