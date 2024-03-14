@@ -152,23 +152,71 @@ class FinanceiroImobme():
         if self.__dados['indices'] == {}:
             del self.__dados['indices']
         return self.__dados
+
+    @staticmethod
+    def indices_antecipados(temp_date, read_only=True):
+           
+        data_temp = datetime.strptime(temp_date, "%d/%m/%Y")
+        data_temp = data_temp.replace(day=1)
+        new_date = data_temp.strftime("%d/%m/%Y")
+        
+        dados = {'data' : new_date, 'indices':{}, 'errors' : {}}   
+        #0,8% a.m.
+        try:
+            indice = Juros_0_8(new_date, read_only)
+            dados['indices'][r'0,8% a.m.'] = indice.resultado()['Fator Composto']
+        except Exception as error:
+            dados['errors'][r'0,8% a.m.'] = str(error)
+
+        #0,5% a.m.
+        try:
+            indice = Juros_0_5(new_date, read_only)
+            dados['indices'][r'0,5% a.m.'] = indice.resultado()['Fator Composto']
+        except Exception as error:
+            dados['errors'][r'0,5% a.m.'] = str(error)
+
+        #JUROS 1%
+        try:
+            indice = Juros_1(new_date, read_only)
+            dados['indices'][r'JUROS 1%'] = indice.resultado()['Fator Composto']
+        except Exception as error:
+            dados['errors'][r'JUROS 1%'] = str(error)
+
+        #JUROS 0,5%
+        try:
+            indice = Juros_0_5(new_date, read_only)
+            dados['indices'][r'JUROS 0,5%'] = indice.resultado()['Fator Composto']
+        except Exception as error:
+            dados['errors'][r'JUROS 0,5%'] = str(error)
+
+
+
+        if dados['errors'] == {}:
+            del dados['errors']
+        if dados['indices'] == {}:
+            del dados['indices']
+        return dados
+
     
 
 if __name__ == "__main__":
+    data = datetime.strptime("14/03/2024", '%d/%m/%Y')
+    indice = FinanceiroImobme.indices_antecipados("14/04/2024")
+    print(indice)
 
-    data = (datetime.now() - relativedelta(months=1)).strftime('%d/%m/%Y')
-    #data = f"1/01/2024"
-    #data = (datetime.now() - relativedelta(months=1)).strftime("%d/%m/%Y")
+    # data = (datetime.now() - relativedelta(months=1)).strftime('%d/%m/%Y')
+    # #data = f"1/01/2024"
+    # #data = (datetime.now() - relativedelta(months=1)).strftime("%d/%m/%Y")
 
-    # Instancia um objeto da classe FinanceiroImobme
-    indice = FinanceiroImobme(data)
+    # # Instancia um objeto da classe FinanceiroImobme
+    # indice = FinanceiroImobme(data)
 
-    # Coleta e imprime os dados financeiros para a data especificada
-    dados = indice.montar_dados(read_only=True)
+    # # Coleta e imprime os dados financeiros para a data especificada
+    # dados = indice.montar_dados(read_only=True)
             
-    df = pd.DataFrame(dados).replace(float("nan"), None)
-    #df.to_excel(f"{data.replace('/', '-')}.xlsx")
-    print(df)
-    #print(dados)
+    # df = pd.DataFrame(dados).replace(float("nan"), None)
+    # #df.to_excel(f"{data.replace('/', '-')}.xlsx")
+    # print(df)
+    # #print(dados)
 
     #import pdb; pdb.set_trace()

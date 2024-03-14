@@ -185,34 +185,34 @@ class SetoriaisMG(Indices):
         indices = self._extrair_indice_pdf()
 
         PP_4_B = indices['PP-4-B']
-        PP_4_B_VAR = round(((PP_4_B - dados_anterior['PP-4-B']) / dados_anterior['PP-4-B']) * 100, 2)
+        PP_4_B_VAR = round(((PP_4_B - dados_anterior['PP-4-B']) / dados_anterior['PP-4-B']) * 100, 3)
         
         R_8_B = indices['R-8-B']
-        R_8_B_VAR = round(((R_8_B - dados_anterior['R-8-B']) / dados_anterior['R-8-B']) * 100, 2)
+        R_8_B_VAR = round(((R_8_B - dados_anterior['R-8-B']) / dados_anterior['R-8-B']) * 100, 3)
 
         PP_4_N = indices['PP-4-N']
-        PP_4_N_VAR = round(((PP_4_N - dados_anterior['PP-4-N']) / dados_anterior['PP-4-N']) * 100, 2)
+        PP_4_N_VAR = round(((PP_4_N - dados_anterior['PP-4-N']) / dados_anterior['PP-4-N']) * 100, 3)
 
         R_8_N = indices['R-8-N']
-        R_8_N_VAR = round(((R_8_N - dados_anterior['R-8-N']) / dados_anterior['R-8-N']) * 100, 2)
+        R_8_N_VAR = round(((R_8_N - dados_anterior['R-8-N']) / dados_anterior['R-8-N']) * 100, 3)
 
         R_16_N = indices['R-16-N']
-        R_16_N_VAR = round(((R_16_N - dados_anterior['R-16-N']) / dados_anterior['R-16-N']) * 100, 2)
+        R_16_N_VAR = round(((R_16_N - dados_anterior['R-16-N']) / dados_anterior['R-16-N']) * 100, 3)
 
         R_8_A = indices['R-8-A']
-        R_8_A_VAR = round(((R_8_A - dados_anterior['R-8-A']) / dados_anterior['R-8-A']) * 100, 2)
+        R_8_A_VAR = round(((R_8_A - dados_anterior['R-8-A']) / dados_anterior['R-8-A']) * 100, 3)
 
         R_16_A = indices['R-16-A']
-        R_16_A_VAR = round(((R_16_A - dados_anterior['R-16-A']) / dados_anterior['R-16-A']) * 100, 2)
+        R_16_A_VAR = round(((R_16_A - dados_anterior['R-16-A']) / dados_anterior['R-16-A']) * 100, 3)
 
         CSL_8_N = indices['CSL-8-N']
-        CSL_8_N_VAR = round(((CSL_8_N - dados_anterior['CSL-8-N']) / dados_anterior['CSL-8-N']) * 100, 2)
+        CSL_8_N_VAR = round(((CSL_8_N - dados_anterior['CSL-8-N']) / dados_anterior['CSL-8-N']) * 100, 3)
 
         CSL_16_N = indices['CSL-16-N']
-        CSL_16_N_VAR = round(((CSL_16_N - dados_anterior['CSL-16-N']) / dados_anterior['CSL-16-N']) * 100, 2)
+        CSL_16_N_VAR = round(((CSL_16_N - dados_anterior['CSL-16-N']) / dados_anterior['CSL-16-N']) * 100, 3)
 
         CSL_16_A = indices['CSL-16-A']
-        CSL_16_A_VAR = round(((CSL_16_A - dados_anterior['CSL-16-A']) / dados_anterior['CSL-16-A']) * 100, 2)
+        CSL_16_A_VAR = round(((CSL_16_A - dados_anterior['CSL-16-A']) / dados_anterior['CSL-16-A']) * 100, 3)
 
 
 

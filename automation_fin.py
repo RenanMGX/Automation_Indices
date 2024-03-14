@@ -12,7 +12,7 @@ from copy import deepcopy
 
 
 class AutomationFin:
-    def __init__(self, date):
+    def __init__(self, date, antecipar=False):
         """
         Inicializa a classe AutomationFin.
 
@@ -25,24 +25,31 @@ class AutomationFin:
             self.date = datetime.now()
         except TypeError:
             self.date = datetime.now()
-
-        self.__indices = [
-            r'0,8% a.m.',
-            r'0,5% a.m.',
-            r'JUROS 1%',
-            r'JUROS 0,5%',
-            'INCC',
-            'CDI',
-            r'CDI 3% a.a.',
-            'IPCA',
-            'IPCA 12a.a.',
-            'POUPA 12',
-            'POUPA 15',
-            'POUPA 28',
-            'IGPM',
-            'IGPM 0,5%',
-            'IGPM 1%',
-        ]
+        if antecipar:
+            self.__indices = [
+                r'0,8% a.m.',
+                r'0,5% a.m.',
+                r'JUROS 1%',
+                r'JUROS 0,5%'
+            ]
+        else:
+            self.__indices = [
+                r'0,8% a.m.',
+                r'0,5% a.m.',
+                r'JUROS 1%',
+                r'JUROS 0,5%',
+                'INCC',
+                'CDI',
+                r'CDI 3% a.a.',
+                'IPCA',
+                'IPCA 12a.a.',
+                'POUPA 12',
+                'POUPA 15',
+                'POUPA 28',
+                'IGPM',
+                'IGPM 0,5%',
+                'IGPM 1%',
+            ]
 
     def verificar_indices_do_mes(self, data):
         """
@@ -185,10 +192,11 @@ class AutomationFin:
         
 if __name__ == "__main__":
     # Configuração da data
-    date = (datetime.now() - relativedelta(months=1)).replace(day=1)
-    date = date.strftime('%d/%m/%Y')
+    dateBrute = (datetime.now() - relativedelta(months=1)).replace(day=1)
+    date = dateBrute.strftime('%d/%m/%Y')
     #date = "01/12/2023"
 
+    
     # Carregamento de credenciais
     credencial = Crendenciais(mod='prd')
     login = credencial.load()['login']
@@ -207,6 +215,23 @@ if __name__ == "__main__":
     # Inicialização do bot para verificar índices
     bot = BotImobme(user=login, password=senha, url=url)
     dados = bot.verificar_indices()
+    
+    
+    for mes in range(3):
+        data = dateBrute + relativedelta(months=mes+1)
+        data = data.strftime('%d/%m/%Y')
+        
+        indice_antecipado = FinanceiroImobme.indices_antecipados(data, read_only=False)
+        
+        auto_antecipado = AutomationFin(data, antecipar=True)
+        indices_pendentes_antecipado = auto_antecipado.verificar_indices_do_mes(dados)
+        if not indices_pendentes_antecipado:
+            print("nenhum indice para antecipar!")
+            continue
+        
+        indices_para_subir_antecipado = auto_antecipado.comparar_indices(date=data, pendentes=indices_pendentes_antecipado, disponivel=indice_antecipado['indices'])
+        bot.execute(indices=indice_antecipado)
+
 
     # Verificação dos índices pendentes
     indices_pendentes = auto.verificar_indices_do_mes(dados)
@@ -217,7 +242,10 @@ if __name__ == "__main__":
     # Comparação e execução dos índices pendentes
     indices_para_subir = auto.comparar_indices(date=date, pendentes=indices_pendentes, disponivel=indice_disponivel['indices'])
     bot.execute(indices=indices_para_subir)
+        
     bot.navegador.quit()
     print(indices_para_subir)
+    
+    
     
     #import pdb; pdb.set_trace()
