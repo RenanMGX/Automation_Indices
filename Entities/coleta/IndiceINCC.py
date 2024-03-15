@@ -93,6 +93,8 @@ class INCC(Indices):
         cursor.execute(f"SELECT * FROM incc WHERE mes='{self.data}'")
         resultado:list = cursor.fetchall()
         
+        
+        #import pdb;pdb.set_trace()
         if (resultado):
             #if not self.read_only:
             print(resultado)
@@ -104,7 +106,9 @@ class INCC(Indices):
                 print(f"atualizado")
                 return
         else:
-            return
+            cursor.execute(f"INSERT INTO incc (valor, variacao, mes) VALUES ({valor}, {var}, '{self.data}')")
+            connection.commit()
+            print("Indice Criado")
 
     def _calculo(self, dados_anterior, dados, novo=False):
         """
@@ -121,7 +125,8 @@ class INCC(Indices):
         
         INDICE = self._extrair_indice(192)
         
-        self.registrar_db(valor=VALOR_INCC, var=VALOR_INCC)
+        if not self.read_only:
+            self.registrar_db(valor=VALOR_INCC, var=INDICE)
 
         if not novo:
             dados['Mês Base'] = datetime.strftime(self.data, "%Y-%m-%d")
@@ -151,5 +156,5 @@ class INCC(Indices):
 
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = INCC("01/02/2024", read_only=True)
+    indice = INCC("01/02/2024", read_only=False)
     print(indice.resultado())
