@@ -27,6 +27,13 @@ class Indices():
         self.data = datetime.strptime(data, "%d/%m/%Y")
         self.data.replace(day=1)
         self.read_only = read_only
+        
+        with open("db_connection.json", 'r')as _file:
+            self.__db_config = json.load(_file)
+    
+    @property
+    def db_config(self):
+        return self.__db_config
 
     def _ler_arquivo(self):
         """

@@ -109,6 +109,8 @@ class INCC(Indices):
             cursor.execute(f"INSERT INTO incc (valor, variacao, mes) VALUES ({valor}, {var}, '{self.data}')")
             connection.commit()
             print("Indice Criado")
+        
+        connection.close()
 
     def _calculo(self, dados_anterior, dados, novo=False):
         """
