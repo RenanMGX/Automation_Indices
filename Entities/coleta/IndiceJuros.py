@@ -201,7 +201,7 @@ class Juros_1(Indices):
 
 if __name__ == "__main__":
     # Exemplo de uso
-    data = "01/01/2024"
+    data = "01/06/2024"
     indice = [Juros_0_5(data, read_only=True), Juros_0_8(data, read_only=True), Juros_1(data, read_only=True)]
 
     for x in indice:

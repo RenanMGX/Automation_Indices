@@ -35,7 +35,7 @@ class CDI(Indices):
         
         #trava para que o indice não seja extraido antes do dia 5 do mes atual
         if (datetime.now().day <= 6) and ((self.data.month == (datetime.now() - relativedelta(months=1)).month)):
-            raise ValueError("Dados do Indice Inexistentes!")
+            raise ValueError("O Indice desta Data ainda não existe!")
         
         # Taxa de CDI ao ano e ao mês
         AO_ANO = 0.03

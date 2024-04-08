@@ -157,7 +157,7 @@ class IGPM_0_50(Indices):
         INDICE = (self._extrair_indice(189) / 100) + 1
         IGPM_MES = dados_anterior['IGPM Mês'] * INDICE
         VARIACAO_ACUM = INDICE * dados_anterior['Variação Acum.']
-        INDICE_COMPOSTO = INDICE_COMPOSTO if (INDICE_COMPOSTO := INDICE * (1 + 0.005)) > 1 else 1
+        INDICE_COMPOSTO = INDICE_COMPOSTO if (INDICE_COMPOSTO := INDICE + 0.005) > 1 else 1
         FATOR_COMPOSTO = dados_anterior['Fator Composto'] * INDICE_COMPOSTO
         VARIACAO_IGPM_0_5 = (FATOR_COMPOSTO / dados_anterior['Fator Composto'] - 1) * 100
         VARIACAO_IGPM = (IGPM_MES / dados_anterior['IGPM Mês'] - 1) * 100
@@ -240,7 +240,7 @@ class IGPM_1(Indices):
         INDICE = (self._extrair_indice(189) / 100) + 1
         IGPM_MES = dados_anterior['IGPM Mês'] * INDICE
         VARIACAO_ACUM = INDICE * dados_anterior['Variação Acum.']
-        INDICE_COMPOSTO = INDICE_COMPOSTO if (INDICE_COMPOSTO := INDICE * (1 + 0.01)) > 1 else 1
+        INDICE_COMPOSTO = INDICE_COMPOSTO if (INDICE_COMPOSTO := INDICE + 0.01) > 1 else 1
         FATOR_COMPOSTO = dados_anterior['Fator Composto'] * INDICE_COMPOSTO
         VARIACAO_IGPM_1 = (FATOR_COMPOSTO / dados_anterior['Fator Composto'] - 1) * 100
         VARIACAO_IGPM = (IGPM_MES / dados_anterior['IGPM Mês'] - 1) * 100

@@ -2,7 +2,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import json
 
-from coleta.IndiceIPCA import IPCA
+from coleta.IndiceIPCA import IPCA, IPCA_1
 from coleta.IndiceJuros import Juros_0_5, Juros_0_8, Juros_1
 from coleta.IndiceINCC import INCC
 from coleta.IndiceCDI import CDI
@@ -103,6 +103,13 @@ class FinanceiroImobme():
             self.__dados['indices']['IPCA 12a.a.'] = indice.resultado()['Fator Composto']
         except Exception as error:
             self.__dados['errors']['IPCA 12a.a.'] = str(error)
+            
+        #IPCA 1%
+        try:
+            indice = IPCA_1(self.date, read_only)
+            self.__dados['indices']['IPCA 1%'] = indice.resultado()['Fator Composto']
+        except Exception as error:
+            self.__dados['errors']['IPCA 1%'] = str(error)
         
         #POUPA 12
         try:

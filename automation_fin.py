@@ -194,7 +194,7 @@ if __name__ == "__main__":
     # Configuração da data
     dateBrute = (datetime.now() - relativedelta(months=1)).replace(day=1)
     date = dateBrute.strftime('%d/%m/%Y')
-    #date = "01/12/2023"
+    #date = "01/02/2024"
 
     
     # Carregamento de credenciais
