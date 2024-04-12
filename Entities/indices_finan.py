@@ -208,7 +208,7 @@ class FinanceiroImobme():
 
 if __name__ == "__main__":
     data = datetime.strptime("14/03/2024", '%d/%m/%Y')
-    indice = FinanceiroImobme.indices_antecipados("14/04/2024")
+    indice = FinanceiroImobme("01/03/2024").montar_dados()
     print(indice)
 
     # data = (datetime.now() - relativedelta(months=1)).strftime('%d/%m/%Y')

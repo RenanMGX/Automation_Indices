@@ -69,8 +69,11 @@ class IGPM(Indices):
         INDICE = INDICE if (INDICE := self._extrair_indice(189)) > 0 else 0
         VALOR = dados_anterior['Valor'] * (1 + INDICE / 100)
         
-        if not self.read_only:
-            self.registrar_db(valor=VALOR, var=INDICE)
+        try:
+            if not self.read_only:
+                self.registrar_db(valor=VALOR, var=INDICE)
+        except:
+            pass
 
         if not novo:
             dados['Data'] = datetime.strftime(self.data, "%Y-%m-%d")
@@ -163,17 +166,20 @@ class IGPM_0_50(Indices):
         VARIACAO_IGPM = (IGPM_MES / dados_anterior['IGPM Mês'] - 1) * 100
         ACRESCIMO_IGPM = VARIACAO_IGPM_0_5 - VARIACAO_IGPM
         
-        if self.read_only:
-            self.registrar_db(
-                igpm_mes=IGPM_MES, 
-                var_igpm=INDICE, 
-                var_acum=VARIACAO_ACUM, 
-                indice_composto_igpm_mais_meio=INDICE_COMPOSTO,
-                fator_composto=FATOR_COMPOSTO,
-                var_igpm_mais_meio=VARIACAO_IGPM_0_5,
-                var_igpm_umponto=VARIACAO_IGPM,
-                acrescimo_igpm=ACRESCIMO_IGPM            
-            )
+        try:
+            if self.read_only:
+                self.registrar_db(
+                    igpm_mes=IGPM_MES, 
+                    var_igpm=INDICE, 
+                    var_acum=VARIACAO_ACUM, 
+                    indice_composto_igpm_mais_meio=INDICE_COMPOSTO,
+                    fator_composto=FATOR_COMPOSTO,
+                    var_igpm_mais_meio=VARIACAO_IGPM_0_5,
+                    var_igpm_umponto=VARIACAO_IGPM,
+                    acrescimo_igpm=ACRESCIMO_IGPM            
+                )
+        except:
+            pass
 
         if not novo:
             dados['Mês Base'] = datetime.strftime(self.data, "%Y-%m-%d")

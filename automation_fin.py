@@ -43,6 +43,7 @@ class AutomationFin:
                 r'CDI 3% a.a.',
                 'IPCA',
                 'IPCA 12a.a.',
+                'IPCA 1%',
                 'POUPA 12',
                 'POUPA 15',
                 'POUPA 28',
