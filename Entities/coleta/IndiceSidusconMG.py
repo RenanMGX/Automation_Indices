@@ -52,7 +52,7 @@ class SetoriaisMG(Indices):
         - str: URL do PDF.
         """        
         mes_bruto = self.data.strftime("%B")
-        mes = "março" if mes_bruto == 'marÃ§o' else mes_bruto
+        mes = "marco" if mes_bruto == 'marÃ§o' else mes_bruto
         mes = mes.title()
 
         url = "https://sinduscon-mg.org.br/cub/tabela-do-cub/"
@@ -67,8 +67,10 @@ class SetoriaisMG(Indices):
         for item in item_s:
             if item.find(class_="alinhatexto").text == str(self.data.year):
                 for link in item.find_all('a'):
+                    print(mes.lower() , link.get('href'))
                     if mes.lower() in (url:=link.get('href')):
                         return url
+                    
         raise FileNotFoundError(f"O Indice desta Data ainda não existe!")
     
     def _extrair_indice_pdf(self):
@@ -274,7 +276,7 @@ class SetoriaisMG(Indices):
         
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = SetoriaisMG("01/01/2024", read_only=True)
+    indice = SetoriaisMG("01/03/2024", read_only=True)
 
     print(f"\n\n\n{indice.resultado()}")
     #data = datetime.strptime(x['Mês Base'],"%Y-%m-%d")
