@@ -1,9 +1,10 @@
 import os
 from datetime import datetime
 from shutil import copy2
+from getpass import getuser
 
 
-def backup():
+def backup(caminho_destino="\\\\server008\\G\\ARQ_PATRIMAR\\WORK\\DB-Indices-RPA\\"):
     """
     Realiza o backup dos arquivos de um diretório para outro.
 
@@ -15,12 +16,12 @@ def backup():
         None
     """    
     caminho_origem = f'{os.getcwd()}\\db\\'
-    caminho_destino = "\\\\server008\\G\\ARQ_PATRIMAR\\WORK\\DB-Indices-RPA\\"
     for arquivo in os.listdir(caminho_origem):
         copy2(caminho_origem + arquivo, caminho_destino)
+        
 
 
-def registro(status, descri=""):
+def registro(status, *, descri=""):
     """
     Registra o status de uma operação em um arquivo CSV de registro.
 
@@ -49,10 +50,13 @@ def registro(status, descri=""):
         arqui.write(f"{date};{index[status]};{descri}\n")
 
 if __name__ == "__main__":
+    
     try:
         # Tenta realizar o backup e registra como concluído em caso de sucesso
         backup()
-        registro(0)
+        registro(0, descri="Backup para WORK")
+        backup(f"C:\\Users\\{getuser()}\\PATRIMAR ENGENHARIA S A\\RPA - Documentos\\RPA - Dados\\Indices\\json\\backup indices")
+        registro(0, descri="Backup para Sharepoint")
     except Exception as error:
         # Em caso de erro, registra o status de erro e a descrição do erro
-        registro(1, f"{type(error)} - {error}")
+        registro(1, descri=f"{type(error)} - {error}")
