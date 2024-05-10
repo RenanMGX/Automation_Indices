@@ -160,10 +160,21 @@ def compilador_fabric_financeiro(entrada, saida):
 
 
 if __name__ == "__main__":
+    import traceback
+    try:
 
-    # Exemplo de uso para compilar índices setoriais
-    compilador_fabric_setoriais(entrada=["db/db_siduscon_mg.json", "db/db_siduscon_rj.json", "db/db_siduscon_sp.json"], saida=f"C:/Users/{getuser()}/OneDrive - PATRIMAR ENGENHARIA S A/Documentos - RPA/RPA - Dados/Indices/indices.json")
+        # Exemplo de uso para compilar índices setoriais
+        compilador_fabric_setoriais(entrada=["db/db_siduscon_mg.json", "db/db_siduscon_rj.json", "db/db_siduscon_sp.json"], saida=f"C:/Users/{getuser()}/OneDrive - PATRIMAR ENGENHARIA S A/Documentos - RPA/RPA - Dados/Indices/indices.json")
 
-    # Exemplo de uso para compilar índices financeiros
-    compilador_fabric_financeiro(entrada=["db/db_setoriais_fin.json"], saida=f"C:/Users/{getuser()}/OneDrive - PATRIMAR ENGENHARIA S A/Documentos - RPA/RPA - Dados/Indices/indices_financeiros.json")
+        # Exemplo de uso para compilar índices financeiros
+        compilador_fabric_financeiro(entrada=["db/db_setoriais_fin.json"], saida=f"C:/Users/{getuser()}/OneDrive - PATRIMAR ENGENHARIA S A/Documentos - RPA/RPA - Dados/Indices/indices_financeiros.json")
+
+    except Exception as error:
+        path:str = "logs/"
+        if not os.path.exists(path):
+            os.makedirs(path)
+        file_name = path + f"LogError_{datetime.now().strftime('%d%m%Y%H%M%Y')}.txt"
+        with open(file_name, 'w', encoding='utf-8')as _file:
+            _file.write(traceback.format_exc())
+        raise error
 

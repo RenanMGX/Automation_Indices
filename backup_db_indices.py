@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from shutil import copy2
 from getpass import getuser
+import traceback
 
 
 def backup(caminho_destino="\\\\server008\\G\\ARQ_PATRIMAR\\WORK\\DB-Indices-RPA\\"):
@@ -60,3 +61,11 @@ if __name__ == "__main__":
     except Exception as error:
         # Em caso de erro, registra o status de erro e a descrição do erro
         registro(1, descri=f"{type(error)} - {error}")
+        
+        path:str = "logs/"
+        if not os.path.exists(path):
+            os.makedirs(path)
+        file_name = path + f"LogError_{datetime.now().strftime('%d%m%Y%H%M%Y')}.txt"
+        with open(file_name, 'w', encoding='utf-8')as _file:
+            _file.write(traceback.format_exc())
+        raise error

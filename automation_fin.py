@@ -9,6 +9,7 @@ import pandas as pd
 from time import sleep
 from shutil import copy2
 from copy import deepcopy
+import traceback
 
 
 class AutomationFin:
@@ -192,61 +193,69 @@ class AutomationFin:
                 pass
         
 if __name__ == "__main__":
-    # Configuração da data
-    dateBrute = (datetime.now() - relativedelta(months=1)).replace(day=1)
-    date = dateBrute.strftime('%d/%m/%Y')
-    #date = "01/02/2024"
+    try:
+        # Configuração da data
+        dateBrute = (datetime.now() - relativedelta(months=1)).replace(day=1)
+        date = dateBrute.strftime('%d/%m/%Y')
+        #date = "01/02/2024"
 
-    
-    # Carregamento de credenciais
-    credencial = Crendenciais(mod='prd')
-    login = credencial.load()['login']
-    senha = credencial.load()['pass']
-    url = credencial.load()['url']
-
-    # Inicialização da automação financeira
-    auto = AutomationFin(date)
-
-    # Carregamento dos índices disponíveis
-    indice_finan = FinanceiroImobme(date)
-    indice_disponivel = indice_finan.montar_dados(read_only=False)
-    # indice_disponivel = {'data': date, 'indices': {r'0,8% a.m.': 160.01894193006328, ...}}
-    auto.salvar_excel(indices=indice_disponivel)
-
-    # Inicialização do bot para verificar índices
-    bot = BotImobme(user=login, password=senha, url=url)
-    dados = bot.verificar_indices()
-    
-    
-    for mes in range(3):
-        data = dateBrute + relativedelta(months=mes+1)
-        data = data.strftime('%d/%m/%Y')
         
-        indice_antecipado = FinanceiroImobme.indices_antecipados(data, read_only=False)
+        # Carregamento de credenciais
+        credencial = Crendenciais(mod='prd')
+        login = credencial.load()['login']
+        senha = credencial.load()['pass']
+        url = credencial.load()['url']
+
+        # Inicialização da automação financeira
+        auto = AutomationFin(date)
+
+        # Carregamento dos índices disponíveis
+        indice_finan = FinanceiroImobme(date)
+        indice_disponivel = indice_finan.montar_dados(read_only=False)
+        # indice_disponivel = {'data': date, 'indices': {r'0,8% a.m.': 160.01894193006328, ...}}
+        auto.salvar_excel(indices=indice_disponivel)
+
+        # Inicialização do bot para verificar índices
+        bot = BotImobme(user=login, password=senha, url=url)
+        dados = bot.verificar_indices()
         
-        auto_antecipado = AutomationFin(data, antecipar=True)
-        indices_pendentes_antecipado = auto_antecipado.verificar_indices_do_mes(dados)
-        if not indices_pendentes_antecipado:
-            print("nenhum indice para antecipar!")
-            continue
         
-        indices_para_subir_antecipado = auto_antecipado.comparar_indices(date=data, pendentes=indices_pendentes_antecipado, disponivel=indice_antecipado['indices'])
-        bot.execute(indices=indice_antecipado)
+        for mes in range(3):
+            data = dateBrute + relativedelta(months=mes+1)
+            data = data.strftime('%d/%m/%Y')
+            
+            indice_antecipado = FinanceiroImobme.indices_antecipados(data, read_only=False)
+            
+            auto_antecipado = AutomationFin(data, antecipar=True)
+            indices_pendentes_antecipado = auto_antecipado.verificar_indices_do_mes(dados)
+            if not indices_pendentes_antecipado:
+                print("nenhum indice para antecipar!")
+                continue
+            
+            indices_para_subir_antecipado = auto_antecipado.comparar_indices(date=data, pendentes=indices_pendentes_antecipado, disponivel=indice_antecipado['indices'])
+            bot.execute(indices=indice_antecipado)
 
 
-    # Verificação dos índices pendentes
-    indices_pendentes = auto.verificar_indices_do_mes(dados)
-    if not indices_pendentes:
-        print("nenhum indice para faltante!")
-        sys.exit()
+        # Verificação dos índices pendentes
+        indices_pendentes = auto.verificar_indices_do_mes(dados)
+        if not indices_pendentes:
+            print("nenhum indice para faltante!")
+            sys.exit()
 
-    # Comparação e execução dos índices pendentes
-    indices_para_subir = auto.comparar_indices(date=date, pendentes=indices_pendentes, disponivel=indice_disponivel['indices'])
-    bot.execute(indices=indices_para_subir)
-        
-    bot.navegador.quit()
-    print(indices_para_subir)
-    
+        # Comparação e execução dos índices pendentes
+        indices_para_subir = auto.comparar_indices(date=date, pendentes=indices_pendentes, disponivel=indice_disponivel['indices'])
+        bot.execute(indices=indices_para_subir)
+            
+        bot.navegador.quit()
+        print(indices_para_subir)
+    except Exception as error:
+        path:str = "logs/"
+        if not os.path.exists(path):
+            os.makedirs(path)
+        file_name = path + f"LogError_{datetime.now().strftime('%d%m%Y%H%M%Y')}.txt"
+        with open(file_name, 'w', encoding='utf-8')as _file:
+            _file.write(traceback.format_exc())
+        raise error
     
     
     #import pdb; pdb.set_trace()

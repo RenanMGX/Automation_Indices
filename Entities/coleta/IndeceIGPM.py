@@ -291,7 +291,7 @@ class IGPM_1(Indices):
 
 
 if __name__ == "__main__":
-    data = "01/04/2024"
+    data = "01/03/2024"
     indice = [IGPM(data, read_only=True), IGPM_0_50(data, read_only=True), IGPM_1(data, read_only=True)]
 
     for x in indice:

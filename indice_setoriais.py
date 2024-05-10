@@ -152,30 +152,51 @@ class PlanilhaIndiceSetorial:
             pass    
 
 if __name__ == "__main__":
-    date = date_creation(datetime.now())
-
-    # Coleta os índices de SetoriaisMG, SetoriaisRJ, SetoriaisSP, e IndicesFinSetoriais para a data especificada
+    import traceback
+    import os
     try:
-        SetoriaisMG(data=date.strftime("%d/%m/%Y"), read_only=False).resultado()
-    except Exception as error:
-        print(f"{type(error)} - {error}")
+        date = date_creation(datetime.now())
+
         
-    try:
-        SetoriaisRJ(data=date.strftime("%d/%m/%Y"), read_only=False).resultado()
+        error_resgat = ""
+        # Coleta os índices de SetoriaisMG, SetoriaisRJ, SetoriaisSP, e IndicesFinSetoriais para a data especificada
+        try:
+            SetoriaisMG(data=date.strftime("%d/%m/%Y"), read_only=False).resultado()
+        except Exception as error:
+            print(f"{type(error)} - {error}")
+            error_resgat = error
+            
+        try:
+            SetoriaisRJ(data=date.strftime("%d/%m/%Y"), read_only=False).resultado()
+        except Exception as error:
+            print(f"{type(error)} - {error}")
+            error_resgat = error
+
+        try:
+            SetoriaisSP(data=date.strftime("%d/%m/%Y"), read_only=False).resultado()
+        except Exception as error:
+            print(f"{type(error)} - {error}")
+            error_resgat = error
+
+        try:
+            IndicesFinSetoriais(data=date.strftime("%d/%m/%Y"), read_only=False).resultado()
+        except Exception as error:
+            print(f"{type(error)} - {error}")
+            error_resgat = error
+
+
+        # Compila os índices setoriais e financeiros em arquivos JSON
+        compilador_dados_BI.compilador_fabric_setoriais(entrada=["db/db_siduscon_mg.json", "db/db_siduscon_rj.json", "db/db_siduscon_sp.json"], saida=f"C:/Users/{getuser()}/PATRIMAR ENGENHARIA S A/RPA - Documentos/RPA - Dados/Indices/indices.json")
+        compilador_dados_BI.compilador_fabric_financeiro(entrada=["db/db_setoriais_fin.json"], saida=f"C:/Users/{getuser()}/PATRIMAR ENGENHARIA S A/RPA - Documentos/RPA - Dados/Indices/indices_financeiros.json")
+        
+        if error_resgat:
+            raise Exception(f"foi executado mas com 1 ou mais errors:\n{type(error_resgat)} -> {error_resgat}")
+    
     except Exception as error:
-        print(f"{type(error)} - {error}")
-
-    try:
-        SetoriaisSP(data=date.strftime("%d/%m/%Y"), read_only=False).resultado()
-    except Exception as error:
-        print(f"{type(error)} - {error}")
-
-    try:
-        IndicesFinSetoriais(data=date.strftime("%d/%m/%Y"), read_only=False).resultado()
-    except Exception as error:
-        print(f"{type(error)} - {error}")
-
-
-    # Compila os índices setoriais e financeiros em arquivos JSON
-    compilador_dados_BI.compilador_fabric_setoriais(entrada=["db/db_siduscon_mg.json", "db/db_siduscon_rj.json", "db/db_siduscon_sp.json"], saida=f"C:/Users/{getuser()}/PATRIMAR ENGENHARIA S A/RPA - Documentos/RPA - Dados/Indices/indices.json")
-    compilador_dados_BI.compilador_fabric_financeiro(entrada=["db/db_setoriais_fin.json"], saida=f"C:/Users/{getuser()}/PATRIMAR ENGENHARIA S A/RPA - Documentos/RPA - Dados/Indices/indices_financeiros.json")
+        path:str = "logs/"
+        if not os.path.exists(path):
+            os.makedirs(path)
+        file_name = path + f"LogError_{datetime.now().strftime('%d%m%Y%H%M%Y')}.txt"
+        with open(file_name, 'w', encoding='utf-8')as _file:
+            _file.write(traceback.format_exc())
+        raise error
