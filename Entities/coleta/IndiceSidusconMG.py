@@ -15,6 +15,7 @@ from pdfminer import high_level
 import re
 import locale
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+import pdb
 
 
 class SetoriaisMG(Indices):
@@ -55,9 +56,15 @@ class SetoriaisMG(Indices):
         mes = "marco" if mes_bruto == 'marÃ§o' else mes_bruto
         mes = mes.title()
 
+        #
         url = "https://sinduscon-mg.org.br/cub/tabela-do-cub/"
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+        }
         try:
-            page = requests.get(url)
+            page = requests.get(url, headers=headers)
+            if page.status_code != 200:
+                raise ConnectionError(f"Não foi possivel se conectar ao site codigo de retorno {page.status_code}")
         except Exception:
             raise ConnectionError("Não foi possivel se conectar ao site!")
         
@@ -66,11 +73,12 @@ class SetoriaisMG(Indices):
         item_s = soup.find_all(class_="item")
         for item in item_s:
             if item.find(class_="alinhatexto").text == str(self.data.year):
+                
                 for link in item.find_all('a'):
                     print(mes.lower() , link.get('href'))
                     if mes.lower() in (url:=link.get('href')):
                         return url
-                    
+        #pdb.set_trace()            
         raise FileNotFoundError(f"O Indice desta Data ainda não existe!")
     
     def _extrair_indice_pdf(self):
@@ -276,7 +284,7 @@ class SetoriaisMG(Indices):
         
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = SetoriaisMG("01/03/2024", read_only=True)
+    indice = SetoriaisMG("01/05/2024", read_only=True)
 
     print(f"\n\n\n{indice.resultado()}")
     #data = datetime.strptime(x['Mês Base'],"%Y-%m-%d")

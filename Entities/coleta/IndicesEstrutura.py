@@ -71,7 +71,10 @@ class Indices():
         cont = 0
         while cont < timeout:
             try:
-                indice_cdi = requests.get(f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{n_indice}/dados?formato=json&dataInicial={data}&dataFinal={data}")
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+                }
+                indice_cdi = requests.get(f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{n_indice}/dados?formato=json&dataInicial={data}&dataFinal={data}", headers=headers)
                 indice_cdi_dados = indice_cdi.json()[0]
                 if data == indice_cdi_dados['data']:               
                     return float(indice_cdi_dados['valor'])
@@ -99,7 +102,10 @@ class Indices():
         - float: Média dos índices do mês.
         """
         #data = datetime.strftime(self.data, "%d/%m/%Y")
-        indice_cdi = requests.get(f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{n_indice}/dados?formato=json")
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+        }
+        indice_cdi = requests.get(f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{n_indice}/dados?formato=json", headers=headers)
         if indice_cdi.status_code == 200:
             indice_cdi_dados = indice_cdi.json()
             contador = 0
