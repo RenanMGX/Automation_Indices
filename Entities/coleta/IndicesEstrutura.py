@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from typing import Dict
 
-from ..credenciais import Credential
+from credenciais import Credential
 
 
 class IndiceNotFound(BaseException):

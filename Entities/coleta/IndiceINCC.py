@@ -8,7 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import mysql.connector
 from typing import List, Tuple
-from ..credenciais import Credential
+from credenciais import Credential
 
 
 try:
