@@ -8,6 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import mysql.connector
 from typing import List, Tuple
+from ..credenciais import Credential
 
 
 try:
@@ -79,8 +80,8 @@ class INCC(Indices):
 
 
     def registrar_db(self, *, valor, var) -> None:
-        with open("db_connection.json", 'r')as _file:
-            db_config = json.load(_file)
+        
+        db_config:dict = Credential('MYSQL_DB').load()
         
         connection = mysql.connector.connect(
             host=db_config['host'],
