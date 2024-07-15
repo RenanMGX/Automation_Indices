@@ -5,28 +5,7 @@ from time import sleep
 import sys
 from indices_finan import FinanceiroImobme
 from datetime import datetime, timedelta
-
-class Crendenciais():
-    def __init__(self, path="Entities/credencial.json", mod='prd'):
-        """
-        Inicializa a classe Credentials.
-
-        Parameters:
-        - path (str): Caminho para o arquivo JSON de credenciais.
-        - mod (str): Modo de operação, por padrão 'prd'.
-        """        
-        self.__mod = mod
-        self.__path = path
-
-    def load(self):
-        """
-        Carrega as credenciais do arquivo JSON.
-
-        Returns:
-        - dict: Dicionário de credenciais.
-        """        
-        with open(self.__path, 'r')as arqui:
-            return json.load(arqui)[self.__mod]
+from .credenciais import Credential
         
 class BotImobme():
     def __init__(self, user, password, url):
@@ -262,9 +241,7 @@ class BotImobme():
 
 
 if __name__ == "__main__":
-    credencial = Crendenciais()
-    login = credencial.load()['login']
-    senha = credencial.load()['pass']
+    crd:dict = Credential('IMOBME_PRD').load()
 
     #indices_objetc = FinanceiroImobme("01/11/2023")
     #indices = indices_objetc.montar_dados()
@@ -275,7 +252,7 @@ if __name__ == "__main__":
     #    print(f"'{key}'")
 
 
-    bot = BotImobme(user=login, password=senha, url="")
+    bot = BotImobme(user=crd['login'], password=crd['password'], url=crd['url'])
     print(bot.verificar_indices())
     #bot.execute(indices=indices)
 

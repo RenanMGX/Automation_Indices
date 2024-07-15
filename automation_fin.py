@@ -1,8 +1,9 @@
 import sys
 sys.path.append("Entities")  # Adiciona o caminho do diretório "Entities" ao path do sistema
 import os
-from Entities.imobme_up import Crendenciais, BotImobme
+from Entities.imobme_up import BotImobme
 from Entities.indices_finan import FinanceiroImobme
+from Entities.credenciais import Credential
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pandas as pd
@@ -201,10 +202,7 @@ if __name__ == "__main__":
 
         
         # Carregamento de credenciais
-        credencial = Crendenciais(mod='prd')
-        login = credencial.load()['login']
-        senha = credencial.load()['pass']
-        url = credencial.load()['url']
+        crd:dict = Credential('IMOBME_PRD').load()
 
         # Inicialização da automação financeira
         auto = AutomationFin(date)
@@ -216,7 +214,7 @@ if __name__ == "__main__":
         auto.salvar_excel(indices=indice_disponivel)
 
         # Inicialização do bot para verificar índices
-        bot = BotImobme(user=login, password=senha, url=url)
+        bot = BotImobme(user=crd['login'], password=crd['password'], url=crd['url'])
         dados = bot.verificar_indices()
         
         
