@@ -9,6 +9,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from typing import Dict
 
+from ..credenciais import Credential
+
+
 class IndiceNotFound(BaseException):
     def __init__(self, text):
         pass
@@ -28,8 +31,8 @@ class Indices():
         self.data.replace(day=1)
         self.read_only = read_only
         
-        with open("db_connection.json", 'r')as _file:
-            self.__db_config = json.load(_file)
+        
+        self.__db_config:dict = Credential('MYSQL_DB').load()
     
     @property
     def db_config(self):
