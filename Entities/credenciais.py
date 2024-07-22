@@ -7,7 +7,7 @@ from getpass import getuser
 from typing import Literal, Dict
 
 class Credential:
-    def __init__(self, name_file:Literal["IMOBME_PRD", "IMOBME_QAS", "MYSQL_DB"], path:str=f"C:/Users/{getuser()}/.patrimar_rpa/credenciais/") -> None:
+    def __init__(self, name_file:Literal["IMOBME_PRD", "IMOBME_QAS", "MYSQL_DB"], path:str=f"C:\\Users\\{getuser()}\\PATRIMAR ENGENHARIA S A\\RPA - Documentos\\RPA - Dados\\CRD\\.patrimar_rpa\\credenciais\\") -> None:
         name:str = str(name_file)
         if not isinstance(path, str):
             raise TypeError("apenas strings")
@@ -117,8 +117,6 @@ class Credential:
         
 if __name__ == "__main__":
     crd = Credential('IMOBME_PRD')
-    
-    crd.save(login="renan.oliveira@patrimar.com.br", password="Admin01*", url="https://patrimarengenharia.imobme.com/Autenticacao/Login")
     
     print(crd.load())
     
