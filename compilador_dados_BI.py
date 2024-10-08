@@ -5,6 +5,7 @@ import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from getpass import getuser
+from Entities.dependencies.logs import Logs , traceback
 
 class CompiladorBI:
     def __init__(self, arquivos):
@@ -160,7 +161,6 @@ def compilador_fabric_financeiro(entrada, saida):
 
 
 if __name__ == "__main__":
-    import traceback
     try:
 
         # Exemplo de uso para compilar índices setoriais
@@ -169,12 +169,7 @@ if __name__ == "__main__":
         # Exemplo de uso para compilar índices financeiros
         compilador_fabric_financeiro(entrada=["db/db_setoriais_fin.json"], saida=f"C:/Users/{getuser()}/OneDrive - PATRIMAR ENGENHARIA S A/Documentos - RPA/RPA - Dados/Indices/indices_financeiros.json")
 
-    except Exception as error:
-        path:str = "logs/"
-        if not os.path.exists(path):
-            os.makedirs(path)
-        file_name = path + f"LogError_{datetime.now().strftime('%d%m%Y%H%M%Y')}.txt"
-        with open(file_name, 'w', encoding='utf-8')as _file:
-            _file.write(traceback.format_exc())
-        raise error
+        Logs().register(status='Concluido', description="Automação da Compilação de dados para o BI foi concluido!")
+    except Exception as err:
+        Logs().register(status='Error', description=str(err), exception=traceback.format_exc())
 

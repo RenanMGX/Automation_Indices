@@ -10,6 +10,7 @@ from Entities.coleta.IndiceSidusconRJ import SetoriaisRJ
 from Entities.coleta.IndiceSidusconSP import SetoriaisSP
 from Entities.coleta.IndiceSetorial_para_Fin import IndicesFinSetoriais
 import compilador_dados_BI
+from Entities.dependencies.logs import Logs, traceback
 
 def date_creation(date):
     """
@@ -152,7 +153,6 @@ class PlanilhaIndiceSetorial:
             pass    
 
 if __name__ == "__main__":
-    import traceback
     import os
     try:
         date = date_creation(datetime.now())
@@ -191,12 +191,7 @@ if __name__ == "__main__":
         
         if error_resgat:
             raise Exception(f"foi executado mas com 1 ou mais errors:\n{type(error_resgat)} -> {error_resgat}")
-    
-    except Exception as error:
-        path:str = "logs/"
-        if not os.path.exists(path):
-            os.makedirs(path)
-        file_name = path + f"LogError_{datetime.now().strftime('%d%m%Y%H%M%Y')}.txt"
-        with open(file_name, 'w', encoding='utf-8')as _file:
-            _file.write(traceback.format_exc())
-        raise error
+        
+        Logs().register(status='Concluido', description="Automação dos Indices Setorias foi concluida!")
+    except Exception as err:
+        Logs().register(status='Error', description=str(err), exception=traceback.format_exc())

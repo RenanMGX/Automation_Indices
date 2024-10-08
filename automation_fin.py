@@ -10,8 +10,8 @@ import pandas as pd
 from time import sleep
 from shutil import copy2
 from copy import deepcopy
-import traceback
-
+from Entities.dependencies.logs import Logs, traceback
+from Entities.dependencies.config import Config
 
 class AutomationFin:
     def __init__(self, date, antecipar=False):
@@ -202,7 +202,7 @@ if __name__ == "__main__":
 
         
         # Carregamento de credenciais
-        crd:dict = Credential('IMOBME_PRD').load()
+        crd:dict = Credential(Config()['credential']['imobme']).load()
 
         # Inicialização da automação financeira
         auto = AutomationFin(date)
@@ -246,14 +246,11 @@ if __name__ == "__main__":
             
         bot.navegador.quit()
         print(indices_para_subir)
-    except Exception as error:
-        path:str = "logs/"
-        if not os.path.exists(path):
-            os.makedirs(path)
-        file_name = path + f"LogError_{datetime.now().strftime('%d%m%Y%H%M%Y')}.txt"
-        with open(file_name, 'w', encoding='utf-8')as _file:
-            _file.write(traceback.format_exc())
-        raise error
+        
+        
+        Logs().register(status='Concluido', description="Automação ddos Indices Financeiro!")
+    except Exception as err:
+        Logs().register(status='Error', description=str(err), exception=traceback.format_exc())
     
     
     #import pdb; pdb.set_trace()

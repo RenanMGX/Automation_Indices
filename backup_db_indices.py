@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from shutil import copy2
 from getpass import getuser
-import traceback
+from Entities.dependencies.logs import Logs, traceback
 
 
 def backup(caminho_destino="\\\\server008\\G\\ARQ_PATRIMAR\\WORK\\DB-Indices-RPA\\"):
@@ -51,21 +51,13 @@ def registro(status, *, descri=""):
         arqui.write(f"{date};{index[status]};{descri}\n")
 
 if __name__ == "__main__":
-    
     try:
         # Tenta realizar o backup e registra como concluído em caso de sucesso
         backup()
         registro(0, descri="Backup para WORK")
         backup(f"C:\\Users\\{getuser()}\\PATRIMAR ENGENHARIA S A\\RPA - Documentos\\RPA - Dados\\Indices\\json\\backup indices")
         registro(0, descri="Backup para Sharepoint")
-    except Exception as error:
-        # Em caso de erro, registra o status de erro e a descrição do erro
-        registro(1, descri=f"{type(error)} - {error}")
-        
-        path:str = "logs/"
-        if not os.path.exists(path):
-            os.makedirs(path)
-        file_name = path + f"LogError_{datetime.now().strftime('%d%m%Y%H%M%Y')}.txt"
-        with open(file_name, 'w', encoding='utf-8')as _file:
-            _file.write(traceback.format_exc())
-        raise error
+    
+        Logs().register(status='Concluido', description="Automação do BackUP dos indices foi Finalizado!")
+    except Exception as err:
+        Logs().register(status='Error', description=str(err), exception=traceback.format_exc())
