@@ -147,7 +147,11 @@ class Indices():
         with webdriver.Chrome()as navegador:
             navegador.get("https://extra-ibre.fgv.br/autenticacao_produtos_licenciados/?ReturnUrl=%2fautenticacao_produtos_licenciados%2flista-produtos.aspx")
             sleep(2)
-            navegador.find_element(By.XPATH, '//*[@id="ctl00_content_hpkGratuito"]').click()
+            #navegador.find_element(By.XPATH, '//*[@id="ctl00_content_hpkGratuito"]').click()
+            crd:dict = Credential('FVG').load()
+            navegador.find_element(By.ID, 'b4-Input1').send_keys(crd['login'])
+            navegador.find_element(By.ID, 'b4-Input_Password').send_keys(crd['password'])
+            navegador.find_element(By.ID, 'b4-Botao_Entrar').click()
             sleep(2)
             navegador.find_element(By.XPATH, '//*[@id="txtBuscarSeries"]').clear()
             navegador.find_element(By.XPATH, '//*[@id="txtBuscarSeries"]').send_keys(pesquisa)

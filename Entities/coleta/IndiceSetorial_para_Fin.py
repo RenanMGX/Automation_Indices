@@ -173,5 +173,5 @@ class IndicesFinSetoriais(Indices):
 
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = IndicesFinSetoriais(f"01/12/2023", read_only=True)
+    indice = IndicesFinSetoriais(f"01/03/2025", read_only=False)
     print(indice.resultado())

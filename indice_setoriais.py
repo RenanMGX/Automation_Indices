@@ -156,7 +156,6 @@ if __name__ == "__main__":
     import os
     try:
         date = date_creation(datetime.now())
-
         
         error_resgat = ""
         # Coleta os índices de SetoriaisMG, SetoriaisRJ, SetoriaisSP, e IndicesFinSetoriais para a data especificada
