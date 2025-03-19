@@ -21,6 +21,7 @@ class BotImobme():
         """        
         try:
             self.navegador = webdriver.Chrome()
+            self.navegador.maximize_window()
             self.__url:str = url
             self.navegador.get(self.__url)
             sleep(2)
