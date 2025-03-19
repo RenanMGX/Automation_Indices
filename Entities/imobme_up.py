@@ -6,6 +6,8 @@ import sys
 from indices_finan import FinanceiroImobme
 from datetime import datetime, timedelta
 from .credenciais import Credential
+import os
+from typing import Union
         
 class BotImobme():
     def __init__(self, user, password, url):
@@ -19,7 +21,7 @@ class BotImobme():
         """        
         try:
             self.navegador = webdriver.Chrome()
-            self.__url = url
+            self.__url:str = url
             self.navegador.get(self.__url)
             sleep(2)
         except Exception as error:
@@ -96,11 +98,15 @@ class BotImobme():
         if not indices['indices']:
             return
         
-        self.roteiro(self.roteiro_script['ir_ate_aba_indice'])
-        sleep(1)
+        #self.roteiro(self.roteiro_script['logar_no_site'])
+        #import pdb; pdb.set_trace()
+        self.load_page('Indice/Aprovacao')
+        
+        # self.roteiro(self.roteiro_script['ir_ate_aba_indice'])
+        # sleep(1)
 
-        self.roteiro(self.roteiro_script['ir_ate_indice_valores'])
-        sleep(1)
+        # self.roteiro(self.roteiro_script['ir_ate_indice_valores'])
+        # sleep(1)
 
         clicou = False
         for key,indice in indices['indices'].items():
@@ -238,6 +244,24 @@ class BotImobme():
             self.temp_variable = target.text
         except:
             pass
+        
+    def load_page(self, endpoint:str):
+        if not endpoint.endswith('/'):
+            endpoint += '/'
+        if endpoint.startswith('/'):
+            endpoint = endpoint[1:]
+            
+        url = self.__url.replace('Autenticacao/Login', '')
+        url = os.path.join(url, endpoint)
+        print(f"Carregando página: {url}...          ")  
+        self.navegador.get(url)
+        
+    def esperar_carregamento(self, *, initial_wait:Union[int, float]=1):
+        sleep(initial_wait)
+        while self.navegador.find_element(By.ID, 'feedback-loader').text == 'Carregando':
+            print("Aguardando carregar página...                ", end='\r')
+            sleep(1)
+        print(end='\r')
 
 
 if __name__ == "__main__":
@@ -253,7 +277,7 @@ if __name__ == "__main__":
 
 
     bot = BotImobme(user=crd['login'], password=crd['password'], url=crd['url'])
-    print(bot.verificar_indices())
+    print(bot.execute(indices))
     #bot.execute(indices=indices)
 
 
