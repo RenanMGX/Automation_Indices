@@ -59,11 +59,13 @@ class BotImobme():
         self.roteiro(self.roteiro_script['logar_no_site'])
         sleep(1)
 
-        self.roteiro(self.roteiro_script['ir_ate_aba_indice'])
-        sleep(1)
+        # self.roteiro(self.roteiro_script['ir_ate_aba_indice'])
+        # sleep(1)
 
-        self.roteiro(self.roteiro_script['ir_ate_indice_valores'])
-        sleep(1)
+        # self.roteiro(self.roteiro_script['ir_ate_indice_valores'])
+        # sleep(1)
+        
+        self.load_page('Indice/Aprovacao')
 
         dados = {'indice': [], 'data' : [], 'status' : []}
         linhas = self.navegador.find_element(By.XPATH, '//*[@id="tblIndiceAprovacao"]/tbody').text.split('\n')
