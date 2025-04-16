@@ -10,6 +10,8 @@ import mysql.connector
 from typing import List, Tuple
 from credenciais import Credential
 
+from credenciais import Credential
+
 
 try:
     from IndicesEstrutura import Indices
@@ -42,9 +44,15 @@ class INCC(Indices):
         tabela = None
         with webdriver.Chrome() as navegador:
             navegador.get("https://extra-ibre.fgv.br/autenticacao_produtos_licenciados/?ReturnUrl=%2fautenticacao_produtos_licenciados%2flista-produtos.aspx")
-            sleep(1)
-            navegador.find_element(By.XPATH, '//*[@id="ctl00_content_hpkGratuito"]').click()
-            sleep(1)
+            sleep(7)
+
+            crd:dict = Credential('FVG').load()
+            navegador.find_element(By.ID, 'b4-Input1').send_keys(crd['login'])
+            navegador.find_element(By.ID, 'b4-Input_Password').send_keys(crd['password'])
+            navegador.find_element(By.ID, 'b4-Botao_Entrar').click()
+            sleep(2)
+
+            #import pdb;pdb.set_trace()
             navegador.find_element(By.XPATH, '//*[@id="dlsCatalogoFixo_imbOpNivelUm_1"]').click() #1
             sleep(1)
             navegador.find_element(By.XPATH, '//*[@id="dlsCatalogoFixo_imbOpNivelDois_4"]').click() #2
@@ -159,5 +167,5 @@ class INCC(Indices):
 
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = INCC("01/02/2024", read_only=False)
+    indice = INCC("01/04/2024", read_only=True)
     print(indice.resultado())

@@ -151,7 +151,7 @@ class SetoriaisSP(Indices):
         
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = SetoriaisSP("01/03/2024", read_only=True)
+    indice = SetoriaisSP("01/03/2025", read_only=False)
 
     print(f"\n\n\n{indice.resultado()}")
     #data = datetime.strptime(x['Mês Base'],"%Y-%m-%d")

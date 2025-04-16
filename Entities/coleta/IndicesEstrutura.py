@@ -108,11 +108,16 @@ class Indices():
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
         }
-        indice_cdi = requests.get(f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{n_indice}/dados?formato=json", headers=headers)
+        data_inicial = datetime.strftime((self.data - relativedelta(months=3)), "%d/%m/%Y")
+        data_final = datetime.strftime((self.data + relativedelta(months=2)), "%d/%m/%Y")
+        #print(data_final)
+        
+        indice_cdi = requests.get(f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{n_indice}/dados?formato=json&dataInicial={data_inicial}&dataFinal={data_final}", headers=headers)
         if indice_cdi.status_code == 200:
             indice_cdi_dados = indice_cdi.json()
             contador = 0
             valor_temp = []
+            #print(indice_cdi_dados)
             for indice in indice_cdi_dados:
                 data_para_teste = datetime.strptime(indice['data'], "%d/%m/%Y")
                 if (data_para_teste.month == self.data.month) and (data_para_teste.year == self.data.year):

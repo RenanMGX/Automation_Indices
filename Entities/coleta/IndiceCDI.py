@@ -86,7 +86,7 @@ class CDI(Indices):
 
 if __name__ == "__main__":
     # Exemplo de uso
-    data = (datetime.now() - relativedelta(months=0)).strftime("%d/%m/%Y")
-    indice = CDI("01/01/2025", read_only=True)
+    #data = (datetime.now() - relativedelta(months=0)).strftime("%d/%m/%Y")
+    indice = CDI("01/04/2025", read_only=True)
     resultado = indice.resultado()
     print(resultado)
