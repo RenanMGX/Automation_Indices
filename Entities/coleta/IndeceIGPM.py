@@ -10,7 +10,7 @@ try:
     from IndicesEstrutura import Indices
 except ModuleNotFoundError:
     from .IndicesEstrutura import Indices
-
+import pandas as pd
 
 class IGPM(Indices):
     def __init__(self, data=None, read_only=True):
@@ -66,7 +66,16 @@ class IGPM(Indices):
         - dados (dict): Dados atuais.
         - novo (bool): Indica se é um novo cálculo.
         """
-        INDICE = INDICE if (INDICE := self._extrair_indice(189)) > 0 else 0
+        
+
+        df = pd.DataFrame(self.arquivo)
+        df = df[df['Data'] == self.data.strftime('%Y-%m-%d')]
+        if not df.empty:
+            INDICE = df.iloc[0].to_dict()['Variação (%)']
+        else:
+            INDICE = INDICE if (INDICE := self._extrair_indice(189)) > 0 else 0
+        
+        #INDICE = INDICE if (INDICE := self._extrair_indice(189)) > 0 else 0
         VALOR = dados_anterior['Valor'] * (1 + INDICE / 100)
         
         try:
@@ -157,7 +166,17 @@ class IGPM_0_50(Indices):
         - dados (dict): Dados atuais.
         - novo (bool): Indica se é um novo cálculo.
         """
-        INDICE = (self._extrair_indice(189) / 100) + 1
+        
+
+        df = pd.DataFrame(self.arquivo)
+        df = df[df['Mês Base'] == self.data.strftime('%Y-%m-%d')]
+        if not df.empty:
+            INDICE = df.iloc[0].to_dict()['Variação IGPM']
+        else:
+            INDICE = (self._extrair_indice(189) / 100) + 1
+        
+        
+        
         IGPM_MES = dados_anterior['IGPM Mês'] * INDICE
         VARIACAO_ACUM = INDICE * dados_anterior['Variação Acum.']
         INDICE_COMPOSTO = INDICE_COMPOSTO if (INDICE_COMPOSTO := INDICE + 0.005) > 1 else 1
@@ -243,7 +262,15 @@ class IGPM_1(Indices):
         - dados (dict): Dados atuais.
         - novo (bool): Indica se é um novo cálculo.
         """
-        INDICE = (self._extrair_indice(189) / 100) + 1
+
+        df = pd.DataFrame(self.arquivo)
+        df = df[df['Mês Base'] == self.data.strftime('%Y-%m-%d')]
+        if not df.empty:
+            INDICE = df.iloc[0].to_dict()['Variação IGPM']
+        else:
+            INDICE = (self._extrair_indice(189) / 100) + 1
+        
+        
         IGPM_MES = dados_anterior['IGPM Mês'] * INDICE
         VARIACAO_ACUM = INDICE * dados_anterior['Variação Acum.']
         INDICE_COMPOSTO = INDICE_COMPOSTO if (INDICE_COMPOSTO := INDICE + 0.01) > 1 else 1

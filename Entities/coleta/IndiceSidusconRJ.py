@@ -147,8 +147,15 @@ class SetoriaisRJ(Indices):
 
         Returns:
         - None
-        """        
-        indice = self._extratir_indice()
+        """      
+        
+
+        df = pd.DataFrame(self.arquivo)
+        df = df[df['Mês Base'] == self.data.strftime('%Y-%m-%d')]
+        if not df.empty:
+            indice = df.iloc[0].to_dict()
+        else:
+            indice = self._extratir_indice()
         
 
         R_16_N_RJ = indice['R-16-A RJ']
@@ -176,7 +183,7 @@ class SetoriaisRJ(Indices):
         
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = SetoriaisRJ("01/01/2024", read_only=True)
+    indice = SetoriaisRJ("01/03/2025", read_only=True)
 
     print(f"\n\n\n{indice.resultado()}")
     #data = datetime.strptime(x['Mês Base'],"%Y-%m-%d")

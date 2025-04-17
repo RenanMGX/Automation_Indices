@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 from pdfminer import high_level
 import re
 import locale
+import pandas as pd
 locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 import pdb
 
@@ -72,11 +73,11 @@ class SetoriaisMG(Indices):
 
         item_s = soup.find_all(class_="item")
         for item in item_s:
-            if item.find(class_="alinhatexto").text == str(self.data.year):
+            if item.find(class_="alinhatexto").text == str(self.data.year): #type: ignore
                 
-                for link in item.find_all('a'):
-                    print(mes.lower() , link.get('href'))
-                    if mes.lower() in (url:=link.get('href')):
+                for link in item.find_all('a'): #type: ignore
+                    print(mes.lower() , link.get('href')) #type: ignore
+                    if mes.lower() in (url:=link.get('href')): #type: ignore
                         return url
         #pdb.set_trace()            
         raise FileNotFoundError(f"O Indice desta Data ainda não existe!")
@@ -88,7 +89,7 @@ class SetoriaisMG(Indices):
         Returns:
         - dict: Dicionário contendo os índices.
         """        
-        pdf_from_url = requests.get(self._obter_link_pdf())
+        pdf_from_url = requests.get(self._obter_link_pdf()) #type: ignore
         pdf_IO = BytesIO(pdf_from_url.content)
         pdf_text = high_level.extract_text(pdf_IO)
 
@@ -191,8 +192,15 @@ class SetoriaisMG(Indices):
 
         Returns:
         - None
-        """        
-        indices = self._extrair_indice_pdf()
+        """   
+        
+        #import pdb; pdb.set_trace()
+        df = pd.DataFrame(self.arquivo)
+        df = df[df['Mês Base'] == self.data.strftime('%Y-%m-%d')]
+        if not df.empty:
+            indices = df.iloc[0].to_dict()
+        else:
+            indices = self._extrair_indice_pdf()
 
         PP_4_B = indices['PP-4-B']
         PP_4_B_VAR = round(((PP_4_B - dados_anterior['PP-4-B']) / dados_anterior['PP-4-B']) * 100, 3)
@@ -284,7 +292,7 @@ class SetoriaisMG(Indices):
         
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = SetoriaisMG("01/05/2024", read_only=True)
+    indice = SetoriaisMG("01/03/2025", read_only=True)
 
     print(f"\n\n\n{indice.resultado()}")
     #data = datetime.strptime(x['Mês Base'],"%Y-%m-%d")

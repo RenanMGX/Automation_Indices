@@ -8,6 +8,8 @@ try:
     from IndicesEstrutura import Indices
 except ModuleNotFoundError:
     from .IndicesEstrutura import Indices
+    
+import pandas as pd
 
 
 class Poupas12(Indices):
@@ -36,8 +38,15 @@ class Poupas12(Indices):
 
         Returns:
         - None
-        """        
-        INDICE = self._extrair_indice(196)
+        """    
+        
+        df = pd.DataFrame(self.arquivo)
+        df = df[df['Data'] == self.data.strftime('%Y-%m-%d')]
+        if not df.empty:
+            INDICE = df.iloc[0].to_dict()['%']
+        else:
+            INDICE = self._extrair_indice(196)
+        #INDICE = self._extrair_indice(196)
         ACUMULADO = dados_anterior['Acumulado']*((INDICE / 100)+1)
         VAR_PORCENTO = ACUMULADO/dados_anterior['Acumulado']-1
 
@@ -98,8 +107,16 @@ class Poupas15(Indices):
 
         Returns:
         - None
-        """        
-        INDICE = self._extrair_indice(196)
+        """       
+        
+        df = pd.DataFrame(self.arquivo)
+        df = df[df['Data'] == self.data.strftime('%Y-%m-%d')]
+        if not df.empty:
+            INDICE = df.iloc[0].to_dict()['%']
+        else:
+            INDICE = self._extrair_indice(196)
+         
+        #INDICE = self._extrair_indice(196)
         ACUMULADO = dados_anterior['Acumulado']*((INDICE / 100)+1)
         VAR_PORCENTO = ACUMULADO/dados_anterior['Acumulado']-1
 
@@ -160,10 +177,17 @@ class Poupas28(Indices):
         Returns:
         - None
         """        
-        INDICE = self._extrair_indice(196)
+
+
+        df = pd.DataFrame(self.arquivo)
+        df = df[df['Data'] == self.data.strftime('%Y-%m-%d')]
+        if not df.empty:
+            INDICE = df.iloc[0].to_dict()['%']
+        else:
+            INDICE = self._extrair_indice(196)
+        
         ACUMULADO = dados_anterior['Acumulado']*((INDICE / 100)+1)
         VAR_PORCENTO = ACUMULADO/dados_anterior['Acumulado']-1
-
 
         if not novo:
             dados['Data'] = datetime.strftime(self.data, "%Y-%m-%d")
@@ -196,7 +220,7 @@ class Poupas28(Indices):
 
 if __name__ == "__main__":
     # Exemplo de uso
-    data = "01/10/2023"
+    data = "01/03/2025"
     indice = [Poupas12(data),Poupas15(data),Poupas28(data)]
 
     for x in indice:

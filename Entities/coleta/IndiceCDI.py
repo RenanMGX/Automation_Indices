@@ -6,6 +6,7 @@ from IndicesEstrutura import Indices
 import requests
 from time import sleep
 import calendar
+import pandas as pd
 
 class CDI(Indices):
     def __init__(self, data=None, read_only=True):
@@ -41,17 +42,28 @@ class CDI(Indices):
         AO_ANO = 0.03
         AO_MES = ((1 + AO_ANO)**(1/12)-1)*100
         
+
         # Índice CDI mensal
-        INDICE_CDI = self._extrair_indice_dias(12)
+        df = pd.DataFrame(self.arquivo)
+        df = df[df['Mês'] == self.data.strftime('%Y-%m-%d')]
+        if not df.empty:
+            INDICE_CDI = df.iloc[0].to_dict()
+            S_CDI = INDICE_CDI['CDI %']
+            INDICE_CDI_JUROS = INDICE_CDI['Indice (CDI + Juros) %']
+            FATOR_COMPOSTO = INDICE_CDI['Fator Composto']
+        else:
+            INDICE_CDI = self._extrair_indice_dias(12)
 
-        # Cálculo do CDI acumulado
-        S_CDI = dados_anterior['CDI'] * (1 + INDICE_CDI / 100)
+            # Cálculo do CDI acumulado
+            S_CDI = dados_anterior['CDI'] * (1 + INDICE_CDI / 100)
         
-        # Índice CDI com juros
-        INDICE_CDI_JUROS = (AO_MES + INDICE_CDI) / 100
+            # Índice CDI com juros
+            INDICE_CDI_JUROS = (AO_MES + INDICE_CDI) / 100
 
-        # Fator composto para o próximo mês
-        FATOR_COMPOSTO = dados_anterior['Fator Composto'] * (1 + INDICE_CDI_JUROS)
+            # Fator composto para o próximo mês
+            FATOR_COMPOSTO = dados_anterior['Fator Composto'] * (1 + INDICE_CDI_JUROS)
+            
+            
 
         if not novo:
             dados['Mês'] = datetime.strftime(self.data, "%Y-%m-%d")
@@ -87,6 +99,6 @@ class CDI(Indices):
 if __name__ == "__main__":
     # Exemplo de uso
     #data = (datetime.now() - relativedelta(months=0)).strftime("%d/%m/%Y")
-    indice = CDI("01/04/2025", read_only=True)
+    indice = CDI("01/03/2025", read_only=True)
     resultado = indice.resultado()
     print(resultado)

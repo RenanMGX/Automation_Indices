@@ -11,7 +11,7 @@ from typing import List, Tuple
 from credenciais import Credential
 
 from credenciais import Credential
-
+import pandas as pd
 
 try:
     from IndicesEstrutura import Indices
@@ -131,10 +131,16 @@ class INCC(Indices):
         - novo (bool): Indica se é um novo cálculo.
         """
         
-        
-        VALOR_INCC = self.valor_incc()
-        
-        INDICE = self._extrair_indice(192)
+
+        df = pd.DataFrame(self.arquivo)
+        df = df[df['Mês Base'] == self.data.strftime('%Y-%m-%d')]
+        if not df.empty:
+            VALOR_INCC = df.iloc[0].to_dict()['INCC']
+            INDICE = df.iloc[0].to_dict()['INCC MÊS']
+        else:
+            VALOR_INCC = self.valor_incc()
+            INDICE = self._extrair_indice(192)
+            
         
         if not self.read_only:
             self.registrar_db(valor=VALOR_INCC, var=INDICE)
@@ -167,5 +173,5 @@ class INCC(Indices):
 
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = INCC("01/04/2024", read_only=True)
+    indice = INCC("01/03/2025", read_only=True)
     print(indice.resultado())

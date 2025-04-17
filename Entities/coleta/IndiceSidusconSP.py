@@ -123,8 +123,15 @@ class SetoriaisSP(Indices):
 
         Returns:
         - None
-        """        
-        indice = self._extratir_indice()
+        """  
+        
+
+        df = pd.DataFrame(self.arquivo)
+        df = df[df['Mês Base'] == self.data.strftime('%Y-%m-%d')]
+        if not df.empty:
+            indice = df.iloc[0].to_dict()['R-16-N SP']
+        else:
+            indice = self._extratir_indice()
         
         R_16_N_SP = indice
         R_16_N_SP_VAR = round(((R_16_N_SP - dados_anterior['R-16-N SP']) / dados_anterior['R-16-N SP']) * 100, 2)
@@ -138,7 +145,7 @@ class SetoriaisSP(Indices):
             novos_dados = {
             'Mês Base': datetime.strftime(self.data, "%Y-%m-%d"),
             }
-            novos_dados['R-16-N SP'] = R_16_N_SP
+            novos_dados['R-16-N SP'] = R_16_N_SP # type: ignore
             novos_dados['R-16-N SP_VAR'] = R_16_N_SP_VAR
             self.arquivo.append(novos_dados)
 
@@ -151,7 +158,7 @@ class SetoriaisSP(Indices):
         
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = SetoriaisSP("01/03/2025", read_only=False)
+    indice = SetoriaisSP("01/03/2025", read_only=True)
 
     print(f"\n\n\n{indice.resultado()}")
     #data = datetime.strptime(x['Mês Base'],"%Y-%m-%d")

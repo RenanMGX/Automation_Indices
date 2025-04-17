@@ -9,6 +9,7 @@ try:
     from IndicesEstrutura import Indices
 except ModuleNotFoundError:
     from .IndicesEstrutura import Indices
+import pandas as pd
 
 class IPCA(Indices):
     def __init__(self, data=None, read_only=True):
@@ -36,13 +37,23 @@ class IPCA(Indices):
         """
         AO_ANO = 0.12
         AO_MES = ((1 + AO_ANO)**(1/12)-1)*100
-        INDICE_IPCA = self._extrair_indice(433) / 100
+        
 
-        IPCA_MES = round(dados_anterior['IPCA Mês'] + (dados_anterior['IPCA Mês'] * INDICE_IPCA), 2)
-        VARIACAO_IPCA = round((INDICE_IPCA) + 1, 4)
-        VARIACAO_ACUM = VARIACAO_IPCA * dados_anterior['Variação IPCA']
-        INDICE_COMPOSTO = VARIACAO_IPCA * (1 + (AO_MES / 100))
-        FATOR_COMPOSTO = dados_anterior['Fator Composto'] * INDICE_COMPOSTO
+        df = pd.DataFrame(self.arquivo)
+        df = df[df['Mês Base'] == self.data.strftime('%Y-%m-%d')]
+        if not df.empty:
+            IPCA_MES = df.iloc[0].to_dict()['IPCA Mês']
+            VARIACAO_IPCA = df.iloc[0].to_dict()['Variação IPCA']
+            VARIACAO_ACUM = df.iloc[0].to_dict()['Variação Acum.']
+            INDICE_COMPOSTO = df.iloc[0].to_dict()['Indice Composto']
+            FATOR_COMPOSTO = df.iloc[0].to_dict()['Fator Composto']
+        else:
+            INDICE_IPCA = self._extrair_indice(433) / 100
+            IPCA_MES = round(dados_anterior['IPCA Mês'] + (dados_anterior['IPCA Mês'] * INDICE_IPCA), 2)
+            VARIACAO_IPCA = round((INDICE_IPCA) + 1, 4)
+            VARIACAO_ACUM = VARIACAO_IPCA * dados_anterior['Variação IPCA']
+            INDICE_COMPOSTO = VARIACAO_IPCA * (1 + (AO_MES / 100))
+            FATOR_COMPOSTO = dados_anterior['Fator Composto'] * INDICE_COMPOSTO
 
         if not novo:
             dados['Mês Base'] = datetime.strftime(self.data, "%Y-%m-%d")
@@ -101,14 +112,27 @@ class IPCA_1(Indices):
         - novo (bool): Indica se é um novo cálculo.
         """
         #import pdb;pdb.set_trace()
-        INDICE_IPCA = (self._extrair_indice(433) / 100) + 1
-        IPCA_MES = dados_anterior['IPCA Mês'] * INDICE_IPCA
-        VARIACAO_ACUM = INDICE_IPCA * dados_anterior['Variação Acum.']
-        INDICE_COMPOSTO = INDICE_COMPOSTO if (INDICE_COMPOSTO := INDICE_IPCA + 0.01) > 1 else 1
-        FATOR_COMPOSTO = dados_anterior['Fator Composto'] * INDICE_COMPOSTO
-        VARIACAO_IPCA_1 = (FATOR_COMPOSTO / dados_anterior['Fator Composto'] - 1) * 100
-        VARIACAO_IPCA = (IPCA_MES / dados_anterior['IPCA Mês'] - 1) * 100
-        ACRESCIMO_IPCA = VARIACAO_IPCA_1 - VARIACAO_IPCA
+        
+        df = pd.DataFrame(self.arquivo)
+        df = df[df['Mês Base'] == self.data.strftime('%Y-%m-%d')]
+        if not df.empty:
+            IPCA_MES = df.iloc[0].to_dict()['IPCA Mês']
+            INDICE_IPCA = df.iloc[0].to_dict()['Variação IPCA']
+            VARIACAO_ACUM = df.iloc[0].to_dict()['Variação Acum.']
+            INDICE_COMPOSTO = df.iloc[0].to_dict()['Indice Composto (IPCA + 1%)']
+            FATOR_COMPOSTO = df.iloc[0].to_dict()['Fator Composto']
+            VARIACAO_IPCA_1 = df.iloc[0].to_dict()['Variação IPCA + 1%']
+            VARIACAO_IPCA = df.iloc[0].to_dict()['Variação IPCA.1']
+            ACRESCIMO_IPCA = df.iloc[0].to_dict()['Acrescimo IPCA']
+        else:
+            INDICE_IPCA = (self._extrair_indice(433) / 100) + 1
+            IPCA_MES = dados_anterior['IPCA Mês'] * INDICE_IPCA
+            VARIACAO_ACUM = INDICE_IPCA * dados_anterior['Variação Acum.']
+            INDICE_COMPOSTO = INDICE_COMPOSTO if (INDICE_COMPOSTO := INDICE_IPCA + 0.01) > 1 else 1
+            FATOR_COMPOSTO = dados_anterior['Fator Composto'] * INDICE_COMPOSTO
+            VARIACAO_IPCA_1 = (FATOR_COMPOSTO / dados_anterior['Fator Composto'] - 1) * 100
+            VARIACAO_IPCA = (IPCA_MES / dados_anterior['IPCA Mês'] - 1) * 100
+            ACRESCIMO_IPCA = VARIACAO_IPCA_1 - VARIACAO_IPCA
 
         if not novo:
             dados['Mês Base'] = datetime.strftime(self.data, "%Y-%m-%d")
@@ -150,12 +174,11 @@ class IPCA_1(Indices):
 
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = IPCA_1("01/12/2023", read_only=True).resultado()
-    indice2 = IPCA_1("01/01/2024", read_only=False).resultado()
-    indice3 = IPCA_1("01/02/2024", read_only=False).resultado()
+    indice = IPCA("01/03/2025", read_only=True).resultado()
+    indice2 = IPCA_1("01/03/2025", read_only=True).resultado()
     
     import pandas as pd
-    df = pd.DataFrame([indice, indice2, indice3])
+    df = pd.DataFrame([indice, indice2])
     print(df)
     #df.to_excel("ipca_1.xlsx", index=False)
     # data = datetime.strptime(x['Mês Base'],"%Y-%m-%d")

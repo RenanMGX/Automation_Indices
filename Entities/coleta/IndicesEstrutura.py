@@ -108,7 +108,7 @@ class Indices():
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
         }
-        data_inicial = datetime.strftime((self.data - relativedelta(months=3)), "%d/%m/%Y")
+        data_inicial = datetime.strftime((self.data - relativedelta(months=2)), "%d/%m/%Y")
         data_final = datetime.strftime((self.data + relativedelta(months=2)), "%d/%m/%Y")
         #print(data_final)
         
