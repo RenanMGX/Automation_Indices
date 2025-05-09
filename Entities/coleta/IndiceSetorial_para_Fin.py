@@ -294,7 +294,7 @@ class IndicesFinSetoriais(Indices):
         Returns:
         - dict: Dados calculados.
         """
-        return super().resultado()git
+        return super().resultado()
 
 
 if __name__ == "__main__":
