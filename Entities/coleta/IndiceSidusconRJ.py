@@ -154,6 +154,8 @@ class SetoriaisRJ(Indices):
         df = df[df['Mês Base'] == self.data.strftime('%Y-%m-%d')]
         if not df.empty:
             indice = df.iloc[0].to_dict()
+            if (indice == 0) or (indice == ""):
+                indice = self._extratir_indice()
         else:
             indice = self._extratir_indice()
         

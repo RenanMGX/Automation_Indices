@@ -130,6 +130,8 @@ class SetoriaisSP(Indices):
         df = df[df['Mês Base'] == self.data.strftime('%Y-%m-%d')]
         if not df.empty:
             indice = df.iloc[0].to_dict()['R-16-N SP']
+            if (indice == 0) or (indice == ""):
+                indice = self._extratir_indice()
         else:
             indice = self._extratir_indice()
         
@@ -158,7 +160,7 @@ class SetoriaisSP(Indices):
         
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = SetoriaisSP("01/03/2025", read_only=True)
+    indice = SetoriaisSP("01/04/2025", read_only=True)
 
     print(f"\n\n\n{indice.resultado()}")
     #data = datetime.strptime(x['Mês Base'],"%Y-%m-%d")

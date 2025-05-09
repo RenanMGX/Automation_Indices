@@ -199,6 +199,8 @@ class SetoriaisMG(Indices):
         df = df[df['Mês Base'] == self.data.strftime('%Y-%m-%d')]
         if not df.empty:
             indices = df.iloc[0].to_dict()
+            if (indices == 0) or (indices == ""):
+                indices = indices = self._extrair_indice_pdf()
         else:
             indices = self._extrair_indice_pdf()
 
