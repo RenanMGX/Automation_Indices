@@ -40,7 +40,7 @@ class BotImobme():
         self.roteiro_script['ir_ate_aba_indice'] = [
             {'action' : self.clicar, 'kargs' : {'target' : '//*[@id="Menu"]/ul/li[5]/a/i'}}, # clicar no icone dos relatorios
             {'action' : self.clicar, 'kargs' : {'target' : '//*[@id="Menu"]/ul/li[5]/div/ul/li[2]/a'}}, # clica no botão gerar relatorios
-            {'action' : self.finalizar, 'kargs' : {'target' : '//*[@id="ddlTipoIndice_chzn"]/a', 'exist' : True}} # finaliza o roteiro se achar a lista dos relatorios
+            {'action' : self.finalizar, 'kargs' : {'target' : '//*[@id="ddlTipoIndice_chosen"]/a', 'exist' : True}} # finaliza o roteiro se achar a lista dos relatorios
         ]
         self.roteiro_script['ir_ate_indice_valores'] = [
             {'action' : self.clicar, 'kargs' : {'target' : '//*[@id="AgreementTabs"]/li[2]/a'}}, # clicar no icone dos relatorios
@@ -115,21 +115,21 @@ class BotImobme():
         for key,indice in indices['indices'].items():
             
             if not clicou:
-                self.navegador.find_element(By.XPATH, '//*[@id="ddlIndiceBase_chzn"]/a').click()
+                self.navegador.find_element(By.XPATH, '//*[@id="ddlIndiceBase_chosen"]/a').click()
                 clicou = True
             contador = 0
 
-            #categoria = self.navegador.find_element(By.XPATH, f'//*[@id="ddlIndiceBase_chzn_o_{1}"]').text
+            #categoria = self.navegador.find_element(By.XPATH, f'//*[@id="ddlIndiceBase_chosen_o_{1}"]').text
             for numero in range(100):
                 try:
-                    categoria = self.navegador.find_element(By.XPATH, f'//*[@id="ddlIndiceBase_chzn_o_{numero}"]').text
+                    categoria = self.navegador.find_element(By.XPATH, f'//*[@id="ddlIndiceBase_chosen_o_{numero}"]').text
                     if categoria == key:
                         clicou = False
                         print(key)
                         self.roteiro(
                             [
                             {'action' : self.esperar, 'kargs' : {'segundos' : 1}},
-                            {'action' : self.clicar, 'kargs' : {'target' : f'//*[@id="ddlIndiceBase_chzn_o_{numero}"]'}},
+                            {'action' : self.clicar, 'kargs' : {'target' : f'//*[@id="ddlIndiceBase_chosen_o_{numero}"]'}},
                             {'action' : self.esperar, 'kargs' : {'segundos' : 1}},
                             {'action' : self.limpar, 'kargs' : {'target' : '//*[@id="txtDataIndice"]'}},
                             {'action' : self.escrever, 'kargs' : {'target' : '//*[@id="txtDataIndice"]', 'input' : indices['data'].replace('/', '')}}, 
