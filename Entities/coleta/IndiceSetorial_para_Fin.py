@@ -64,13 +64,15 @@ class IndicesFinSetoriais(Indices):
                 indice = str(df_mes['IPCA'].iloc[0])
                 if (indice != "nan") and (indice != ""):
                     IPCA = float(indice)
-                    IPCA_VAR = float(df_mes['IPCA'].iloc[0])
+                    IPCA_VAR = float(df_mes['IPCA_VAR'].iloc[0])
                 else:
                     IPCA = self.consultar_db("db_ipca.json")['IPCA Mês']
                     IPCA_VAR = ((IPCA / dados_anterior['IPCA']) - 1) * 100
         except:
             IPCA = ""
             IPCA_VAR = ""
+            
+        
             
         try:
             if df_mes.empty:
@@ -299,5 +301,5 @@ class IndicesFinSetoriais(Indices):
 
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = IndicesFinSetoriais(f"01/04/2025", read_only=True)
+    indice = IndicesFinSetoriais(f"01/06/2025", read_only=True)
     print(indice.resultado())

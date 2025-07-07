@@ -169,14 +169,14 @@ class IPCA_1(Indices):
         - dict: Dados tratados.
         """
         keys = ["Mês Base", "IPCA Mês", "Fator Composto"]
-        #return {chaves: entrada[chaves] for chaves in keys}
-        return entrada
+        return {chaves: entrada[chaves] for chaves in keys}
+        #return entrada
 
 if __name__ == "__main__":
     # Exemplo de uso
     indice = IPCA("01/03/2025", read_only=True).resultado()
     indice2 = IPCA_1("01/03/2025", read_only=True).resultado()
-    
+    print(indice)
     import pandas as pd
     df = pd.DataFrame([indice, indice2])
     print(df)
