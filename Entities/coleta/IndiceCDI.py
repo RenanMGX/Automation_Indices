@@ -9,7 +9,7 @@ import calendar
 import pandas as pd
 
 class CDI(Indices):
-    def __init__(self, data=None, read_only=True):
+    def __init__(self, data=None, read_only=True, *, force:bool=False):
         """
         Inicializa uma instância da classe CDI.
 
@@ -17,6 +17,7 @@ class CDI(Indices):
         - data (str): Data no formato "dd/mm/yyyy" (opcional, padrão: primeiro dia do mês atual).
         - read_only (bool): Indica se a instância deve ser somente leitura (opcional, padrão: True).
         """
+        self.__force = force
         if data is None:
             data_temp = datetime(datetime.now().year, datetime.now().month, 1)
             data_nova = datetime.strftime(data_temp, "%d/%m/%Y")
@@ -46,13 +47,14 @@ class CDI(Indices):
         # Índice CDI mensal
         df = pd.DataFrame(self.arquivo)
         df = df[df['Mês'] == self.data.strftime('%Y-%m-%d')]
-        if not df.empty:
+        if (not df.empty) and (not self.__force):
             INDICE_CDI = df.iloc[0].to_dict()
             S_CDI = INDICE_CDI['CDI %']
             INDICE_CDI_JUROS = INDICE_CDI['Indice (CDI + Juros) %']
             FATOR_COMPOSTO = INDICE_CDI['Fator Composto']
         else:
-            INDICE_CDI = self._extrair_indice_dias(12)
+            #INDICE_CDI = self._extrair_indice_dias(12)
+            INDICE_CDI = _INDICE if (_INDICE := self._extrair_indice_dias(12)) > 0 else 0
 
             # Cálculo do CDI acumulado
             S_CDI = dados_anterior['CDI'] * (1 + INDICE_CDI / 100)
@@ -99,6 +101,6 @@ class CDI(Indices):
 if __name__ == "__main__":
     # Exemplo de uso
     #data = (datetime.now() - relativedelta(months=0)).strftime("%d/%m/%Y")
-    indice = CDI("01/03/2025", read_only=True)
+    indice = CDI("01/03/2025", read_only=True, force=False)
     resultado = indice.resultado()
     print(resultado)

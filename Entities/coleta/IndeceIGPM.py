@@ -106,7 +106,7 @@ class IGPM(Indices):
         Returns:
         - dict: Dados tratados.
         """
-        keys = ["Data", "Valor"]
+        keys = ["Data", "Valor", "Variação (%)"]
         return {chaves: entrada[chaves] for chaves in keys}
 
 
@@ -318,7 +318,7 @@ class IGPM_1(Indices):
 
 
 if __name__ == "__main__":
-    data = "01/03/2025"
+    data = "01/01/2025"
     indice = [IGPM(data, read_only=True), IGPM_0_50(data, read_only=True), IGPM_1(data, read_only=True)]
 
     for x in indice:

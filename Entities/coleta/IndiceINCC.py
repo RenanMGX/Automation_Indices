@@ -20,7 +20,7 @@ except ModuleNotFoundError:
 
 
 class INCC(Indices):
-    def __init__(self, data=None, read_only=True):
+    def __init__(self, data=None, read_only=True, *, force:bool=False):
         """
         Inicializa uma instância da classe INCC.
 
@@ -28,6 +28,7 @@ class INCC(Indices):
         - data (str): Data no formato "dd/mm/yyyy" (opcional, padrão: primeiro dia do mês atual).
         - read_only (bool): Indica se a instância deve ser somente leitura (opcional, padrão: True).
         """
+        self.__force = force
         if data is None:
             data_temp = datetime(datetime.now().year, datetime.now().month, 1)
             data_nova = datetime.strftime(data_temp, "%d/%m/%Y")
@@ -134,11 +135,12 @@ class INCC(Indices):
 
         df = pd.DataFrame(self.arquivo)
         df = df[df['Mês Base'] == self.data.strftime('%Y-%m-%d')]
-        if not df.empty:
+        if (not df.empty) and (not self.__force):
             VALOR_INCC = df.iloc[0].to_dict()['INCC']
             INDICE = df.iloc[0].to_dict()['INCC MÊS']
         else:
-            VALOR_INCC = self.valor_incc()
+            #VALOR_INCC = self.valor_incc()
+            VALOR_INCC = _INDICE if (_INDICE := self.valor_incc()) > 0 else 0
             INDICE = self._extrair_indice(192)
             
         
@@ -173,5 +175,5 @@ class INCC(Indices):
 
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = INCC("01/03/2025", read_only=True)
+    indice = INCC("01/03/2025", read_only=True, force=True)
     print(indice.resultado())

@@ -13,14 +13,15 @@ import pandas as pd
 
 
 class Poupas12(Indices):
-    def __init__(self, data=None, read_only=True):
+    def __init__(self, data=None, read_only=True, *, force:bool=False):
         """
         Inicializa a classe PoupasBase.
 
         Parameters:
         - data (str): Data no formato 'dd/mm/yyyy'. Se não fornecido, será o primeiro dia do mês atual.
         - read_only (bool): Indica se a instância será somente leitura.
-        """        
+        """     
+        self.__force = force   
         if data == None:
             data_temp = datetime(datetime.now().year, datetime.now().month, 1)
             data_nova = datetime.strftime(data_temp, "%d/%m/%Y")
@@ -42,10 +43,12 @@ class Poupas12(Indices):
         
         df = pd.DataFrame(self.arquivo)
         df = df[df['Data'] == self.data.strftime('%Y-%m-%d')]
-        if not df.empty:
+        if (not df.empty) and (not self.__force):
             INDICE = df.iloc[0].to_dict()['%']
         else:
-            INDICE = self._extrair_indice(196)
+            #INDICE = self._extrair_indice(196)
+            INDICE = _INDICE if (_INDICE := self._extrair_indice(196)) > 0 else 0
+            
         #INDICE = self._extrair_indice(196)
         ACUMULADO = dados_anterior['Acumulado']*((INDICE / 100)+1)
         VAR_PORCENTO = ACUMULADO/dados_anterior['Acumulado']-1
@@ -81,14 +84,15 @@ class Poupas12(Indices):
         return {chaves: entrada[chaves] for chaves in keys}
 
 class Poupas15(Indices):
-    def __init__(self, data=None, read_only=True):
+    def __init__(self, data=None, read_only=True, *, force:bool=False):
         """
         Inicializa a classe PoupasBase.
 
         Parameters:
         - data (str): Data no formato 'dd/mm/yyyy'. Se não fornecido, será o primeiro dia do mês atual.
         - read_only (bool): Indica se a instância será somente leitura.
-        """                
+        """    
+        self.__force = force            
         if data == None:
             data_temp = datetime(datetime.now().year, datetime.now().month, 1)
             data_nova = datetime.strftime(data_temp, "%d/%m/%Y")
@@ -114,7 +118,8 @@ class Poupas15(Indices):
         if not df.empty:
             INDICE = df.iloc[0].to_dict()['%']
         else:
-            INDICE = self._extrair_indice(196)
+            #INDICE = self._extrair_indice(196)
+            INDICE = _INDICE if (_INDICE := self._extrair_indice(196)) > 0 else 0
          
         #INDICE = self._extrair_indice(196)
         ACUMULADO = dados_anterior['Acumulado']*((INDICE / 100)+1)
@@ -150,14 +155,15 @@ class Poupas15(Indices):
         return {chaves: entrada[chaves] for chaves in keys}
 
 class Poupas28(Indices):
-    def __init__(self, data=None, read_only=True):
+    def __init__(self, data=None, read_only=True, *, force:bool=False):
         """
         Inicializa a classe PoupasBase.
 
         Parameters:
         - data (str): Data no formato 'dd/mm/yyyy'. Se não fornecido, será o primeiro dia do mês atual.
         - read_only (bool): Indica se a instância será somente leitura.
-        """                
+        """   
+        self.__force = force             
         if data == None:
             data_temp = datetime(datetime.now().year, datetime.now().month, 1)
             data_nova = datetime.strftime(data_temp, "%d/%m/%Y")
@@ -181,10 +187,11 @@ class Poupas28(Indices):
 
         df = pd.DataFrame(self.arquivo)
         df = df[df['Data'] == self.data.strftime('%Y-%m-%d')]
-        if not df.empty:
+        if (not df.empty) and (not self.__force):
             INDICE = df.iloc[0].to_dict()['%']
         else:
-            INDICE = self._extrair_indice(196)
+            #INDICE = self._extrair_indice(196)
+            INDICE = _INDICE if (_INDICE := self._extrair_indice(196)) > 0 else 0
         
         ACUMULADO = dados_anterior['Acumulado']*((INDICE / 100)+1)
         VAR_PORCENTO = ACUMULADO/dados_anterior['Acumulado']-1
@@ -221,7 +228,7 @@ class Poupas28(Indices):
 if __name__ == "__main__":
     # Exemplo de uso
     data = "01/03/2025"
-    indice = [Poupas12(data),Poupas15(data),Poupas28(data)]
+    indice = [Poupas12(data, read_only=True, force=True),Poupas15(data, read_only=True, force=True),Poupas28(data, read_only=True, force=True)]
 
     for x in indice:
         print(x.resultado())
