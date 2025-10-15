@@ -52,11 +52,10 @@ class IPCA(Indices):
             #INDICE_IPCA = self._extrair_indice(433) / 100
             INDICE_IPCA = _INDICE if (_INDICE := (self._extrair_indice(433) / 100)) > 0 else 0
             IPCA_MES = round(dados_anterior['IPCA Mês'] + (dados_anterior['IPCA Mês'] * INDICE_IPCA), 2)
-            VARIACAO_IPCA = round((INDICE_IPCA) + 1, 4)
+            VARIACAO_IPCA = _INDICE2 if (_INDICE2:=round((self._extrair_indice(433) / 100) + 1, 4)) > 0 else 0
             VARIACAO_ACUM = VARIACAO_IPCA * dados_anterior['Variação IPCA']
             INDICE_COMPOSTO = VARIACAO_IPCA * (1 + (AO_MES / 100))
             FATOR_COMPOSTO = dados_anterior['Fator Composto'] * INDICE_COMPOSTO
-                    
         if not novo:
             dados['Mês Base'] = datetime.strftime(self.data, "%Y-%m-%d")
             dados['IPCA Mês'] = IPCA_MES
@@ -115,7 +114,6 @@ class IPCA_1(Indices):
         - novo (bool): Indica se é um novo cálculo.
         """
         #import pdb;pdb.set_trace()
-        
         df = pd.DataFrame(self.arquivo)
         df = df[df['Mês Base'] == self.data.strftime('%Y-%m-%d')]
         if (not df.empty) and (not self.__force):
@@ -178,12 +176,17 @@ class IPCA_1(Indices):
 
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = IPCA("01/09/2025", read_only=True, force=False).resultado()
-    indice2 = IPCA_1("01/09/2025", read_only=True, force=False).resultado()
+    indice12a = IPCA("01/09/2025", read_only=True, force=False).resultado()['Fator Composto']#IPCA 12a.a.
+    indice = IPCA("01/09/2025", read_only=True, force=False).resultado()#IPCA
+    indice2 = IPCA_1("01/09/2025", read_only=True, force=False).resultado()['Fator Composto']#IPCA 1%
     #print(indice)
     import pandas as pd
-    df = pd.DataFrame([indice, indice2])
+    df = pd.DataFrame({
+        "Indice": ["IPCA 12a.a.", "IPCA", "IPCA 1%"],
+        "value": [indice12a, indice['IPCA Mês'], indice2]
+    })
     print(df)
+    print(indice)
     #df.to_excel("ipca_1.xlsx", index=False)
     # data = datetime.strptime(x['Mês Base'],"%Y-%m-%d")
     # print(data)
