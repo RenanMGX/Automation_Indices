@@ -1,6 +1,7 @@
 import json
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from time import sleep
 import sys
 from indices_finan import FinanceiroImobme
@@ -144,6 +145,7 @@ class BotImobme():
                             {'action' : self.esperar, 'kargs' : {'segundos' : 2}},
                             {'action' : self.clicar, 'kargs' : {'target' : '/html/body/div[3]/div[3]/div/button[1]'}},#'/html/body/div[3]/div[3]/div/button[1]'
                             {'action' : self.clicar, 'kargs' : {'target' : '/html/body/div[3]/div[3]/div/button'}},
+                            {'action' : self._esperar_carregamento, 'kargs' : {"t": 1}},
                             {'action' : self.finalizador_controlado, 'kargs' : ""}
                         ]
                         )
@@ -196,8 +198,11 @@ class BotImobme():
  
     def limpar(self, argumentos):
         try:
-            target = self.navegador.find_element(By.XPATH, argumentos['target'])
-            target.clear()
+            while len(self.navegador.find_element(By.XPATH, argumentos['target']).text) > 0:
+                self.navegador.find_element(By.XPATH, argumentos['target']).send_keys(Keys.BACKSPACE)
+            
+            #target = self.navegador.find_element(By.XPATH, argumentos['target'])
+            #target.clear()
         except:
             pass
     
@@ -217,6 +222,13 @@ class BotImobme():
             target.send_keys(argumentos['input'])
         except:
             pass
+        
+    def _esperar_carregamento(self, *, initial_wait:Union[int, float]=1):
+        sleep(initial_wait)
+        while self.navegador.find_element(By.ID, 'feedback-loader').text == 'Carregando':
+            print("Aguardando carregar página...                ", end='\r')
+            sleep(1)
+        print(end='\r')
     
     def finalizar(self, argumentos):
         '''
