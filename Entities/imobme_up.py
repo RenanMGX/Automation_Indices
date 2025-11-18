@@ -68,7 +68,11 @@ class BotImobme():
         
         self.load_page('Indice/Aprovacao')
 
+        #self.navegador.find_element(By.ID, 'txtData').send_keys(indices['data'].replace('/', ''))
+        
         dados = {'indice': [], 'data' : [], 'status' : []}
+        
+        
         linhas = self.navegador.find_element(By.XPATH, '//*[@id="tblIndiceAprovacao"]/tbody').text.split('\n')
         
         for num in range(int((len(linhas) / 2)), int((len(linhas) * 1.20))):
@@ -138,8 +142,8 @@ class BotImobme():
                             {'action' : self.esperar, 'kargs' : {'segundos' : 3}},
                             {'action' : self.clicar, 'kargs' : {'target' : '//*[@id="AddNovo"]'}},
                             {'action' : self.esperar, 'kargs' : {'segundos' : 2}},
-                            {'action' : self.clicar, 'kargs' : {'target' : '/html/body/div[4]/div[3]/div/button[1]'}},
-                            {'action' : self.clicar, 'kargs' : {'target' : '/html/body/div[4]/div[3]/div/button'}},
+                            {'action' : self.clicar, 'kargs' : {'target' : '/html/body/div[3]/div[3]/div/button[1]'}},#'/html/body/div[3]/div[3]/div/button[1]'
+                            {'action' : self.clicar, 'kargs' : {'target' : '/html/body/div[3]/div[3]/div/button'}},
                             {'action' : self.finalizador_controlado, 'kargs' : ""}
                         ]
                         )
