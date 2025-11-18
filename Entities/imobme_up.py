@@ -79,7 +79,7 @@ class BotImobme():
             try:
                 indice = self.navegador.find_element(By.XPATH, f'//*[@id="{num}"]/td[1]').text
                 data = self.navegador.find_element(By.XPATH, f'//*[@id="{num}"]/td[2]').text[3:]
-                status = self.navegador.find_element(By.XPATH, f'//*[@id="{num}"]/td[4]').text
+                status = self.navegador.find_element(By.XPATH, f'//*[@id="{num}"]/td[5]').text
 
                 dados['indice'].append(indice)
                 dados['data'].append(data)
@@ -88,9 +88,9 @@ class BotImobme():
             except Exception as error:
                 continue
         
+        #import pdb; pdb.set_trace()
         return dados
 
-        #import pdb; pdb.set_trace()
 
     def execute(self, indices):
         """
