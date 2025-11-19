@@ -215,8 +215,27 @@ if __name__ == "__main__":
 
         # Inicialização do bot para verificar índices
         bot = BotImobme(user=crd['login'], password=crd['password'], url=crd['url'])
-        dados = bot.verificar_indices()
         
+        bot.navegador.get(bot.url) 
+
+        bot.roteiro(bot.roteiro_script['logar_no_site'])
+        sleep(1)
+        
+        bot.load_page('Indice/Aprovacao')
+        
+        dados = {'indice': [], 'data' : [], 'status' : []}
+        _date = dateBrute
+        for _ in range(4):
+            try:
+                temp_dados = bot.verificar_indices(_date + relativedelta(months=_))
+                dados['indice'].extend(temp_dados['indice'])
+                dados['data'].extend(temp_dados['data'])    
+                dados['status'].extend(temp_dados['status'])
+            except Exception as e:
+                print(e)
+                pass
+            
+        #import pdb; pdb.set_trace()
         
         for mes in range(3):
             data = dateBrute + relativedelta(months=mes+1)

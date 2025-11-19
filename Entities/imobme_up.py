@@ -11,6 +11,10 @@ import os
 from typing import Union
         
 class BotImobme():
+    @property
+    def url(self) -> str:
+        return self.__url
+    
     def __init__(self, user, password, url):
         """
         Inicializa a classe BotImobme.
@@ -49,17 +53,17 @@ class BotImobme():
         ]
     
 
-    def verificar_indices(self):
+    def verificar_indices(self, date:datetime):
         """
         Verifica os índices do site e retorna os dados.
 
         Returns:
         - dict: Dados dos índices.
         """        
-        self.navegador.get(self.__url)
+        # self.navegador.get(self.__url)
 
-        self.roteiro(self.roteiro_script['logar_no_site'])
-        sleep(1)
+        # self.roteiro(self.roteiro_script['logar_no_site'])
+        # sleep(1)
 
         # self.roteiro(self.roteiro_script['ir_ate_aba_indice'])
         # sleep(1)
@@ -67,20 +71,44 @@ class BotImobme():
         # self.roteiro(self.roteiro_script['ir_ate_indice_valores'])
         # sleep(1)
         
-        self.load_page('Indice/Aprovacao')
+        # self.load_page('Indice/Aprovacao')
+        
+        for _ in range(3):
+            try:
+                self.navegador.find_element(By.XPATH, '//*[@id="Content"]/section/div/div/div/div[1]/h4')
+                break
+            except:
+                self.load_page('Indice/Aprovacao')
 
-        #self.navegador.find_element(By.ID, 'txtData').send_keys(indices['data'].replace('/', ''))
+        try:
+            self.navegador.find_element(By.XPATH, '/html/body/div[5]/div[11]/div/button').click()
+        except:
+            pass
+        
+        while len(self.navegador.find_element(By.ID, 'txtData').get_attribute('value')) > 0: #type: ignore
+            self.navegador.find_element(By.ID, 'txtData').send_keys(Keys.BACKSPACE)
+        self.navegador.find_element(By.XPATH, '//*[@id="Content"]/section/div/div/div/div[1]/h4').click()
+        
+        self.navegador.find_element(By.ID, 'txtData').send_keys(date.strftime('%d%m%Y'))
+        self.navegador.find_element(By.XPATH, '//*[@id="Content"]/section/div/div/div/div[1]/h4').click()
+                                              
+        
+        self.esperar_carregamento(initial_wait=2)
         
         dados = {'indice': [], 'data' : [], 'status' : []}
         
         
-        linhas = self.navegador.find_element(By.XPATH, '//*[@id="tblIndiceAprovacao"]/tbody').text.split('\n')
+        #linhas = self.navegador.find_element(By.XPATH, '//*[@id="tblIndiceAprovacao"]/tbody').text.split('\n')
         
-        for num in range(int((len(linhas) / 2)), int((len(linhas) * 1.20))):
+        tbody = self.navegador.find_element(By.XPATH, '//*[@id="tblIndiceAprovacao"]/tbody')
+        trs = tbody.find_elements(By.TAG_NAME, 'tr')
+        ids = [tr.get_attribute('id') for tr in trs]
+        
+        for id in ids:
             try:
-                indice = self.navegador.find_element(By.XPATH, f'//*[@id="{num}"]/td[1]').text
-                data = self.navegador.find_element(By.XPATH, f'//*[@id="{num}"]/td[2]').text[3:]
-                status = self.navegador.find_element(By.XPATH, f'//*[@id="{num}"]/td[5]').text
+                indice = self.navegador.find_element(By.XPATH, f'//*[@id="{id}"]/td[1]').text
+                data = self.navegador.find_element(By.XPATH, f'//*[@id="{id}"]/td[2]').text[3:]
+                status = self.navegador.find_element(By.XPATH, f'//*[@id="{id}"]/td[5]').text
 
                 dados['indice'].append(indice)
                 dados['data'].append(data)
@@ -90,6 +118,7 @@ class BotImobme():
                 continue
         
         #import pdb; pdb.set_trace()
+        self.esperar_carregamento(initial_wait=2)
         return dados
 
 
@@ -224,12 +253,14 @@ class BotImobme():
         except:
             pass
         
-    def _esperar_carregamento(self, *, initial_wait:Union[int, float]=1):
+    def _esperar_carregamento(self, argumentos):
+        initial_wait:Union[int, float]=5
         sleep(initial_wait)
         while self.navegador.find_element(By.ID, 'feedback-loader').text == 'Carregando':
             print("Aguardando carregar página...                ", end='\r')
             sleep(1)
         print(end='\r')
+        sleep(2)
     
     def finalizar(self, argumentos):
         '''
