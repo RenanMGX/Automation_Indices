@@ -198,11 +198,12 @@ class BotImobme():
  
     def limpar(self, argumentos):
         try:
-            while len(self.navegador.find_element(By.XPATH, argumentos['target']).text) > 0:
-                self.navegador.find_element(By.XPATH, argumentos['target']).send_keys(Keys.BACKSPACE)
-            
-            #target = self.navegador.find_element(By.XPATH, argumentos['target'])
-            #target.clear()
+            try:
+                while len(self.navegador.find_element(By.XPATH, argumentos['target']).get_attribute('value')) > 0: #type: ignore
+                    self.navegador.find_element(By.XPATH, argumentos['target']).send_keys(Keys.BACKSPACE)
+            except:
+                target = self.navegador.find_element(By.XPATH, argumentos['target'])
+                target.clear()
         except:
             pass
     
