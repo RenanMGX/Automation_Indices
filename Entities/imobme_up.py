@@ -148,9 +148,9 @@ class BotImobme():
         clicou = False
         for key,indice in indices['indices'].items():
             
-            if not clicou:
-                self.navegador.find_element(By.XPATH, '//*[@id="ddlIndiceBase_chosen"]/a').click()
-                clicou = True
+            #if not clicou:
+                #self.navegador.find_element(By.XPATH, '//*[@id="ddlIndiceBase_chosen"]/a').click()
+                #clicou = True
             contador = 0
 
             #categoria = self.navegador.find_element(By.XPATH, f'//*[@id="ddlIndiceBase_chosen_o_{1}"]').text

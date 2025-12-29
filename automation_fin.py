@@ -270,6 +270,7 @@ if __name__ == "__main__":
         Logs().register(status='Concluido', description="Automação ddos Indices Financeiro!")
     except Exception as err:
         Logs().register(status='Error', description=str(err), exception=traceback.format_exc())
+        import pdb; pdb.set_trace()
     
     
     #import pdb; pdb.set_trace()

@@ -7,6 +7,8 @@ from .functions import Functions
 import traceback
 import asyncio
 import requests
+requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning) #type:ignore
+
 import json
 from getpass import getuser
 from socket import gethostname
@@ -35,7 +37,7 @@ class Logs:
             
     def online_register(self, *, name_rpa:str, status:Literal[0,1,2,99], date:datetime, descricao:str, exception:str="", nome_pc:str="", nome_agente=""):
         try:
-            reqUrl = f"http://{self.__hostname}:{self.__port}/api/rpa_logs/registrar"
+            reqUrl = f"https://{self.__hostname}:{self.__port}/api/rpa_logs/registrar"
 
             headersList = {
             "Authorization": f"Token {self.__token}",
@@ -52,7 +54,7 @@ class Logs:
             "exception": str(exception)
             })
 
-            response = requests.request("PATCH", reqUrl, data=payload,  headers=headersList)
+            response = requests.request("PATCH", reqUrl, data=payload,  headers=headersList, verify=False)
 
             #print(response.text)
         except Exception as error:

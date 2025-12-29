@@ -7,7 +7,7 @@ from getpass import getuser
 from typing import Literal, Dict
 
 class Credential:
-    def __init__(self, name_file:Literal["IMOBME_PRD", "IMOBME_QAS", "MYSQL_DB"]|str, path:str=f"C:\\Users\\{getuser()}\\PATRIMAR ENGENHARIA S A\\RPA - Documentos\\RPA - Dados\\CRD\\.patrimar_rpa\\credenciais\\") -> None:
+    def __init__(self, name_file:Literal["IMOBME_PRD", "IMOBME_QAS", "MYSQL_DB"]|str, path:str=f"C:\\Users\\{getuser()}\\PATRIMAR ENGENHARIA SA\\RPA - Documentos\\RPA - Dados\\CRD\\.patrimar_rpa\\credenciais\\") -> None:
         name:str = str(name_file)
         if not isinstance(path, str):
             raise TypeError("apenas strings")
