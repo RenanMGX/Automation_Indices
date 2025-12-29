@@ -7,17 +7,34 @@ from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from typing import Dict
-
+from typing import Dict, Literal
+from datetime import datetime, timezone, timedelta
+from dateutil.relativedelta import relativedelta
+import pandas as pd
 from credenciais import Credential
 
+def formatar_data(date:datetime) -> str:
+
+    # Define o fuso horário -03:00
+    tz = timezone(timedelta(hours=-3))
+
+    # Cria um datetime com o fuso horário
+    dt = datetime(date.year, date.month, 1, 0, 0, 0, tzinfo=tz)
+
+    # Formata no padrão desejado
+    formatted_date = dt.strftime("%Y-%m-%dT%H:%M:%S%z")
+
+    # Ajusta para incluir o ":" no offset (ex.: -03:00)
+    formatted_date = formatted_date[:-2] + ":" + formatted_date[-2:]
+    
+    return formatted_date
 
 class IndiceNotFound(BaseException):
     def __init__(self, text):
         pass
 
 class Indices():
-    def __init__(self, data=datetime.now().strftime("%d/%m/%Y"), read_only=True, path=""):
+    def __init__(self, data=datetime.now().strftime("%d/%m/%Y"), read_only=True, path="", *, show_all:bool=False):
         """
         Classe para lidar com índices econômicos.
 
@@ -26,11 +43,11 @@ class Indices():
         - read_only (bool): Indica se os dados são apenas para leitura.
         - path (str): Caminho para o arquivo de dados.
         """
+        self.show_all = show_all
         self.db_path = path
         self.data = datetime.strptime(data, "%d/%m/%Y")
         self.data.replace(day=1)
         self.read_only = read_only
-        
         
         self.__db_config:dict = Credential('MYSQL_DB').load()
     
@@ -186,6 +203,29 @@ class Indices():
                 continue
         
         raise FileNotFoundError("O Indice desta Data ainda não existe!")
+    
+    def _extrair_indice_ipea(self, *, sercodigo:Literal['IGP12_INCC12', 'PRECOS12_INPC12', 'IGP12_IGPDI12', 'IGP12_IGPM12']|str, date:datetime):
+        reqUrl = f"http://www.ipeadata.gov.br/api/odata4/ValoresSerie(SERCODIGO='{sercodigo}')"
+
+        headersList = {
+        "Accept": "*/*",
+        "User-Agent": "Thunder Client (https://www.thunderclient.com)" 
+        }
+
+        payload = ""
+
+        response = requests.request("GET", reqUrl, data=payload,  headers=headersList)
+
+        if response.status_code == 200:
+            dados = response.json()['value']
+            if not dados:
+                raise Exception("Nenhum dado retornado pela API do IPEA.")
+            df = pd.DataFrame(dados)
+            df = df[df["VALDATA"] == formatar_data(date)]
+            return float(df['VALVALOR'].values[0])
+        else:
+            raise Exception(f"Erro ao conectar na API do IPEA\n{response.status_code} - {response.reason}\n{response.text}")
+        
 
     def valor_inpc(self):
         """
@@ -256,7 +296,7 @@ class Indices():
         if not existe:
             if not (self.data - relativedelta(months=1)).month == datetime.strptime(anterior[key_data], '%Y-%m-%d').month:
                 raise ValueError("Dados do Indice Inexistentes!")
-            self._calculo(dados=dados, dados_anterior=anterior, novo=True)
+            self._calculo(dados=dados, dados_anterior=anterior, novo=False)
         
         if not self.read_only:
             self._gravar_arquivo(self.arquivo)

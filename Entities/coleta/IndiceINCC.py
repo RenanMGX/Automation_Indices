@@ -9,9 +9,9 @@ from selenium.webdriver.common.by import By
 import mysql.connector
 from typing import List, Tuple
 from credenciais import Credential
-
 from credenciais import Credential
 import pandas as pd
+
 
 try:
     from IndicesEstrutura import Indices
@@ -20,7 +20,7 @@ except ModuleNotFoundError:
 
 
 class INCC(Indices):
-    def __init__(self, data=None, read_only=True, *, force:bool=False):
+    def __init__(self, data=None, read_only=True, *, force:bool=False, show_all:bool=False):
         """
         Inicializa uma instância da classe INCC.
 
@@ -33,7 +33,7 @@ class INCC(Indices):
             data_temp = datetime(datetime.now().year, datetime.now().month, 1)
             data_nova = datetime.strftime(data_temp, "%d/%m/%Y")
             data = data_nova
-        super().__init__(data=data, read_only=read_only, path="db/db_incc.json")
+        super().__init__(data=data, read_only=read_only, path="db/db_incc.json", show_all=show_all)
 
     def valor_incc(self):
         """
@@ -46,7 +46,7 @@ class INCC(Indices):
         with webdriver.Chrome() as navegador:
             navegador.get("https://extra-ibre.fgv.br/autenticacao_produtos_licenciados/?ReturnUrl=%2fautenticacao_produtos_licenciados%2flista-produtos.aspx")
             sleep(7)
-
+            import pdb;pdb.set_trace()
             crd:dict = Credential('FVG').load()
             navegador.find_element(By.ID, 'b4-Input1').send_keys(crd['login'])
             navegador.find_element(By.ID, 'b4-Input_Password').send_keys(crd['password'])
@@ -86,6 +86,7 @@ class INCC(Indices):
                 continue
 
         raise FileNotFoundError("O índice desta data ainda não existe!")
+
 
 
     def registrar_db(self, *, valor, var) -> None:
@@ -131,7 +132,6 @@ class INCC(Indices):
         - dados (dict): Dados atuais.
         - novo (bool): Indica se é um novo cálculo.
         """
-        
 
         df = pd.DataFrame(self.arquivo)
         df = df[df['Mês Base'] == self.data.strftime('%Y-%m-%d')]
@@ -139,9 +139,11 @@ class INCC(Indices):
             VALOR_INCC = df.iloc[0].to_dict()['INCC']
             INDICE = df.iloc[0].to_dict()['INCC MÊS']
         else:
+            #INDICE = self._extrair_indice(192)
+            INDICE = _INDICE if (_INDICE := self._extrair_indice(192)) > 0 else 0
             #VALOR_INCC = self.valor_incc()
-            VALOR_INCC = _INDICE if (_INDICE := self.valor_incc()) > 0 else 0
-            INDICE = self._extrair_indice(192)
+            #VALOR_INCC = _INDICE if (_INDICE := ((dados_anterior['INCC'] * (INDICE / 100)) + dados_anterior['INCC'])) > 0 else 0
+            VALOR_INCC = self._extrair_indice_ipea(sercodigo='IGP12_INCC12', date=self.data)
             
         
         if not self.read_only:
@@ -170,10 +172,12 @@ class INCC(Indices):
         Returns:
         - dict: Dados tratados.
         """
+        if self.show_all:
+            return entrada
         keys = ["Mês Base", "INCC"]
         return {chaves: entrada[chaves] for chaves in keys}
 
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = INCC("01/03/2025", read_only=True, force=True)
+    indice = INCC("01/11/2025", read_only=True, force=True, show_all=True)
     print(indice.resultado())

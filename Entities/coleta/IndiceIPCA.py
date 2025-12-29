@@ -176,9 +176,9 @@ class IPCA_1(Indices):
 
 if __name__ == "__main__":
     # Exemplo de uso
-    indice12a = IPCA("01/09/2025", read_only=True, force=False).resultado()['Fator Composto']#IPCA 12a.a.
-    indice = IPCA("01/09/2025", read_only=True, force=False).resultado()#IPCA
-    indice2 = IPCA_1("01/09/2025", read_only=True, force=False).resultado()['Fator Composto']#IPCA 1%
+    indice12a = IPCA("01/11/2025", read_only=True, force=False).resultado()['Fator Composto']#IPCA 12a.a.
+    indice = IPCA("01/11/2025", read_only=True, force=False).resultado()#IPCA
+    indice2 = IPCA_1("01/11/2025", read_only=True, force=False).resultado()['Fator Composto']#IPCA 1%
     #print(indice)
     import pandas as pd
     df = pd.DataFrame({

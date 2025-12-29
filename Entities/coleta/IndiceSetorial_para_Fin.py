@@ -20,6 +20,7 @@ class IndicesFinSetoriais(Indices):
         - data (str): Data no formato "dd/mm/yyyy" (opcional, padrão: primeiro dia do mês atual).
         - read_only (bool): Indica se a instância deve ser somente leitura (opcional, padrão: True).
         """
+        self.novo:bool|None = None
         if data is None:
             data_temp = datetime(datetime.now().year, datetime.now().month, 1)
             data_nova = datetime.strftime(data_temp, "%d/%m/%Y")
@@ -52,10 +53,15 @@ class IndicesFinSetoriais(Indices):
         - dados (dict): Dados atuais.
         - novo (bool): Indica se é um novo cálculo.
         """
+        if not self.novo is None:
+            print("alterou estatus")
+            novo = self.novo
+        
         df = pd.DataFrame(self.arquivo)
 
         df_mes = df[df['Mês Base'] == self.data.strftime('%Y-%m-%d')]            
-            
+        
+        # IPCA   
         try:
             if df_mes.empty:
                 IPCA = self.consultar_db("db_ipca.json")['IPCA Mês']
@@ -71,12 +77,12 @@ class IndicesFinSetoriais(Indices):
         except:
             IPCA = ""
             IPCA_VAR = ""
-            
+        ##################    
         
-            
+        # INPC
         try:
             if df_mes.empty:
-                INPC = self.valor_inpc()
+                INPC = self._extrair_indice_ipea(sercodigo='PRECOS12_INPC12', date=self.data)
                 INPC_VAR = ((INPC / dados_anterior['INPC']) - 1) * 100
             else:
                 indice = str(df_mes['INPC'].iloc[0])
@@ -84,14 +90,14 @@ class IndicesFinSetoriais(Indices):
                     INPC = float(indice)
                     INPC_VAR = float(df_mes['INPC_VAR'].iloc[0])
                 else:
-                    INPC = self.valor_inpc()
+                    INPC = self._extrair_indice_ipea(sercodigo='PRECOS12_INPC12', date=self.data)
                     INPC_VAR = ((INPC / dados_anterior['INPC']) - 1) * 100
         except:
             INPC = ""
             INPC_VAR = ""
-                        
+        ##################
         
-        
+        # INCC
         try:
             if df_mes.empty:
                 INCC = self.consultar_db("db_incc.json")['INCC']
@@ -109,7 +115,6 @@ class IndicesFinSetoriais(Indices):
                     INCC_VAR_12_MESES = ((INCC / INCC_ANO_ANTERIOR) - 1) * 100
                 except:
                     INCC_VAR_12_MESES = ""
-                
             else:
                 indice = str(df_mes['INCC'].iloc[0])
                 if (indice != "nan") and (indice != ""):
@@ -134,13 +139,15 @@ class IndicesFinSetoriais(Indices):
                         INCC_VAR_12_MESES = ((INCC / INCC_ANO_ANTERIOR) - 1) * 100
                     except:
                         INCC_VAR_12_MESES = ""
-                    
         except:
             INCC = ""
             INCC_VAR = ""
             INCC_VAR_ANO = ""
             INCC_VAR_12_MESES = ""
-            
+        ##################
+        
+        
+        # CDI
         try:
             if df_mes.empty:
                 CDI_VAR = self._extrair_indice_dias(12)
@@ -156,12 +163,12 @@ class IndicesFinSetoriais(Indices):
         except:
             CDI_VAR = ""
             CDI = ""
-            
+        ##################
                 
-            
+        # IGP DI
         try:
             if df_mes.empty:
-                IGP_DI = self.valor_igp_di()
+                IGP_DI = self._extrair_indice_ipea(sercodigo='IGP12_IGPDI12', date=self.data)
                 IGP_DI_VAR = ((IGP_DI / dados_anterior['IGP DI']) - 1) * 100
             else:
                 indice = str(df_mes['IGP DI'].iloc[0])
@@ -169,27 +176,30 @@ class IndicesFinSetoriais(Indices):
                     IGP_DI = float(indice)
                     IGP_DI_VAR = float(df_mes['IGP DI_VAR'].iloc[0])
                 else:
-                    IGP_DI = self.valor_igp_di()
+                    IGP_DI = self._extrair_indice_ipea(sercodigo='IGP12_IGPDI12', date=self.data)
                     IGP_DI_VAR = ((IGP_DI / dados_anterior['IGP DI']) - 1) * 100
         except:
             IGP_DI = ""
             IGP_DI_VAR = ""
+        ##################
             
-            
-        try:
-            if (df_mes.empty) or ((indice:=str(df_mes['IGP-M'].iloc[0])) != "nan"):
-                IGP_M = float(indice)
-                IGP_M_VAR = float(df_mes['IGP-M_VAR'].iloc[0])
-            else:
-                IGP_M = self.valor_igp_m()
-                IGP_M_VAR = ((IGP_M / dados_anterior['IGP-M']) - 1) * 100
-        except:
-            IGP_M = ""
-            IGP_M_VAR = ""
-            
+        # IGP-M
+        # try:
+        #     if (df_mes.empty) or ((indice:=str(df_mes['IGP-M'].iloc[0])) != "nan"):
+        #         IGP_M = float(indice)
+        #         IGP_M_VAR = float(df_mes['IGP-M_VAR'].iloc[0])
+        #     else:
+        #         IGP_M = self.valor_igp_m()
+        #         IGP_M_VAR = ((IGP_M / dados_anterior['IGP-M']) - 1) * 100
+        # except:
+        #     IGP_M = ""
+        #     IGP_M_VAR = ""
+        ###################
+        
+        # IGP-M
         try:
             if df_mes.empty:
-                IGP_M = self.valor_igp_m()
+                IGP_M = self._extrair_indice_ipea(sercodigo='IGP12_IGPM12', date=self.data)
                 IGP_M_VAR = ((IGP_M / dados_anterior['IGP-M']) - 1) * 100
             else:
                 indice = str(df_mes['IGP-M'].iloc[0])
@@ -197,14 +207,14 @@ class IndicesFinSetoriais(Indices):
                     IGP_M = float(indice)
                     IGP_M_VAR = float(df_mes['IGP-M_VAR'].iloc[0])
                 else:
-                    IGP_M = self.valor_igp_m()
+                    IGP_M = self._extrair_indice_ipea(sercodigo='IGP12_IGPM12', date=self.data)
                     IGP_M_VAR = ((IGP_M / dados_anterior['IGP-M']) - 1) * 100
         except:
             IGP_M = ""
             IGP_M_VAR = ""
+        ##################
             
-            
-            
+        # SALARIO MINIMO
         try:
             if df_mes.empty:
                 SALARIO_MIN = self._extrair_indice(1619)
@@ -216,11 +226,9 @@ class IndicesFinSetoriais(Indices):
                     SALARIO_MIN = self._extrair_indice(1619)
         except:
             SALARIO_MIN = ""
-            
-            
-            
-            
+        ##################
                         
+        # POUPANÇA
         try:
             if df_mes.empty:
                 POUPA_VAR = self._extrair_indice(25)
@@ -232,23 +240,8 @@ class IndicesFinSetoriais(Indices):
                     POUPA_VAR = self._extrair_indice(25)
         except:
             POUPA_VAR = ""
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-
-
-
-
-
-
-
+        ##################
+        print(f"{novo=}")
         if not novo:
             dados['Mês Base'] = datetime.strftime(self.data, "%Y-%m-%d")
             dados['IPCA'] = IPCA
@@ -301,5 +294,6 @@ class IndicesFinSetoriais(Indices):
 
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = IndicesFinSetoriais(f"01/06/2025", read_only=True)
+    indice = IndicesFinSetoriais(f"01/11/2025", read_only=True)
+    #indice.novo = False
     print(indice.resultado())
