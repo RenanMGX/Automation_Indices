@@ -156,6 +156,10 @@ if __name__ == "__main__":
     import os
     try:
         date = date_creation(datetime.now())
+        print(date)
+        #date = date - relativedelta(months=1)
+        #print(date)
+        
         
         error_resgat = ""
         # Coleta os índices de SetoriaisMG, SetoriaisRJ, SetoriaisSP, e IndicesFinSetoriais para a data especificada
@@ -187,6 +191,8 @@ if __name__ == "__main__":
         # Compila os índices setoriais e financeiros em arquivos JSON
         compilador_dados_BI.compilador_fabric_setoriais(entrada=["db/db_siduscon_mg.json", "db/db_siduscon_rj.json", "db/db_siduscon_sp.json"], saida=f"C:/Users/{getuser()}/PATRIMAR ENGENHARIA SA/RPA - Documentos/RPA - Dados/Indices/indices.json")
         compilador_dados_BI.compilador_fabric_financeiro(entrada=["db/db_setoriais_fin.json"], saida=f"C:/Users/{getuser()}/PATRIMAR ENGENHARIA SA/RPA - Documentos/RPA - Dados/Indices/indices_financeiros.json")
+        
+        #input(f"data: {date} - ")
         
         if error_resgat:
             raise Exception(f"foi executado mas com 1 ou mais errors:\n{type(error_resgat)} -> {error_resgat}")

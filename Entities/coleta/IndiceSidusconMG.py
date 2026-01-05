@@ -294,7 +294,7 @@ class SetoriaisMG(Indices):
         
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = SetoriaisMG("01/03/2025", read_only=True)
+    indice = SetoriaisMG("01/09/2025", read_only=False)
 
     print(f"\n\n\n{indice.resultado()}")
     #data = datetime.strptime(x['Mês Base'],"%Y-%m-%d")

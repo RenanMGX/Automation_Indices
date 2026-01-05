@@ -296,7 +296,7 @@ class Indices():
         if not existe:
             if not (self.data - relativedelta(months=1)).month == datetime.strptime(anterior[key_data], '%Y-%m-%d').month:
                 raise ValueError("Dados do Indice Inexistentes!")
-            self._calculo(dados=dados, dados_anterior=anterior, novo=False)
+            self._calculo(dados=dados, dados_anterior=anterior, novo=True)
         
         if not self.read_only:
             self._gravar_arquivo(self.arquivo)

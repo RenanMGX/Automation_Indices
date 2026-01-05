@@ -179,5 +179,5 @@ class INCC(Indices):
 
 if __name__ == "__main__":
     # Exemplo de uso
-    indice = INCC("01/11/2025", read_only=True, force=True, show_all=True)
+    indice = INCC("01/12/2025", read_only=False, force=True, show_all=True)
     print(indice.resultado())
